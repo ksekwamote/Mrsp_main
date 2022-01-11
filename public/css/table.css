@@ -1,0 +1,226 @@
+@import url("https://fonts.googleapis.com/css?family=Muli:300,400,700,800");
+
+  /* * {
+      margin: 0px; 
+      padding: 0px; 
+      box-sizing: border-box;
+  } */
+  
+  *{
+    font-family: "Muli", sans-serif;
+  }
+  .table-detail{
+    min-height: auto;
+    padding: 15px;
+  }
+  /* .table-detail{
+    padding-top: 20px;
+    box-shadow: 0 10px 20px rgba(133, 133, 133, 0.19), 0 6px 6px rgba(133, 133, 133, 0.23);
+    border:1px solid rgba(131, 130, 130, 0.19);
+  } */
+
+  .limiter {
+    width: 100%;
+    margin: 0px auto;
+  }
+  
+  .container-table100 {
+    width: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    /* align-items: center;
+    justify-content: center; */
+    flex-wrap: wrap;
+  }
+  
+  .wrap-table100 {
+    width: 1170px;
+  }
+  
+  table {
+    border-spacing: 1;
+    border-collapse: collapse;
+    background: #fff;
+    overflow: hidden;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;   
+  }
+  table * {
+    position: relative;
+  }
+  table td, table th {
+    padding-left: 0px;
+  }
+  table thead tr {
+    height: 30px;
+    border-bottom: 1px solid rgb(203, 203, 203);
+  }
+  table tbody tr {
+    height: 45px;
+  }
+  table tbody tr:last-child {
+    border: 0;
+  }
+  table td, table th {
+    text-align: left;
+  }
+  table td.l, table th.l {
+    text-align: right;
+  }
+  table td.c, table th.c {
+    text-align: center;
+  }
+  table td.r, table th.r {
+    text-align: center;
+  }
+  
+  .table100-head th{
+    font-size: 14px;
+  }
+
+  /* tbody tr:nth-child(even) {
+    background-color: #f5f5f5;
+  } */
+  
+  tbody tr {
+    font-size: 14px;
+    color: #808080;
+    border-bottom: 1px solid rgb(225, 224, 224);
+  }
+  
+  tbody tr:hover {
+    color: #555555;
+    background-color: #f5f5f5;
+    cursor: pointer;
+  }
+  
+  .column1 {
+    width: 100px;
+  
+  }
+  
+  .column2 {
+    width: 100px;
+  }
+  
+  .column3 {
+    width: 100px;
+  }
+  
+  .column4 {
+    width: 80px;
+  }
+  
+  .column5 {
+    width: 80px;
+    
+  }
+  .column6 {
+    width: 80px;
+  }
+  
+  .column7 {
+    width: 5px;
+    
+    padding-left: 25px;
+  }
+  .column8 {
+    width: 5px;
+  }
+  
+  .column1 span{
+      font-size: 15px;
+  }
+  
+  @media screen and (max-width: 768px) {
+    table {
+      display: block;
+    }
+    table > *, table tr, table td, table th {
+      display: block;
+    }
+    table thead {
+      display: none;
+    }
+    table tbody tr {
+      height: auto;
+      padding: 32px 0;
+    }
+    table tbody tr td {
+      /* padding-left: 40% !important; */
+      margin-bottom: 0px;
+    }
+    table tbody tr td:last-child {
+      margin-bottom: 0;
+    }
+    table tbody tr td:before {
+      font-size: 14px;
+      color: #cc4242;
+      line-height: 1.2;
+      font-weight: unset;
+      position: absolute;
+      width: 40%;
+      left: 30px;
+      top: 0;
+      
+    }
+/*    
+    FIX THIS !!!!!1 
+    table tbody tr td:nth-child(1):before {
+      content: "Date";
+    }
+    table tbody tr td:nth-child(2):before {
+      content: "Order ID";
+    }
+    table tbody tr td:nth-child(3):before {
+      content: "Name";
+    }
+    table tbody tr td:nth-child(4):before {
+      content: "Price";
+    }
+    table tbody tr td:nth-child(5):before {
+      content: "Quantity";
+    }
+    table tbody tr td:nth-child(6):before {
+      content: "Total";
+    }
+     */
+    .column4,
+    .column5,
+    .column6 {
+      text-align: left;
+    }
+    .column8,
+    .column7,
+    .column4,
+    .column5,
+    .column6,
+    .column1,
+    .column2,
+    .column3 {
+      width: 100%;
+    }
+  
+    tbody tr {
+      font-size: 14px;
+      
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .container-table100 {
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+  }
+
+  .truncate {
+    width: 8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }

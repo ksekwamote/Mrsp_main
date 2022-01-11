@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Landlord | Tenants</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.js"
+      integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+      integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/datetime/1.1.1/css/dataTables.dateTime.min.css"
+    />
+
+    <link rel="stylesheet" href="/css/bootstrap.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/table.css" />
+    <link rel="stylesheet" href="/css/breadcrumbs.css" />
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <nav class="col-lg-2 col-12 d-lg-block d-none px-0">
+          <div class="sidebar">
+            <div class="pl-3 pt-2">
+              <h3 class="text-primary text-truncate m-0 mt-0">MrsP</h3>
+              <small class="m-0 text-light">Landlord Admin</small>
+            </div>
+
+            <p class="text-muted text-uppercase mb-1 mt-4 px-3">Menu</p>
+
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="/listings/create">
+                  <i class="fas fa-plus"></i>
+                  Add New Property
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/listings">
+                  <i class="fas fa-tasks"></i>
+                  Properties
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/applications">
+                  <i class="fas fa-tasks"></i>
+                  Screenings
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/tenants">
+                  <i class="fas fa-tasks"></i>
+                  Tenants
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/tenants/transactions">
+                  <i class="fas fa-tasks"></i>
+                  Payments
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/listings/expenses">
+                  <i class="fas fa-tasks"></i>
+                  Expenses
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/tenants/escalations">
+                  <i class="fas fa-tasks"></i>
+                  Escalations
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/tenants/defaulters">
+                  <i class="fas fa-tasks"></i>
+                  Defaulters
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/tenants/lapsing">
+                  <i class="fas fa-tasks"></i>
+                  Lapsing
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/tenants/service_requests">
+                  <i class="fas fa-tasks"></i>
+                  Service Requests
+                </a>
+              </li>
+              <!-- <li class="nav-item">
+                <a class="nav-link" href="/tenants/tenant_bills">
+                  <i class="fas fa-tasks"></i>
+                  Tenant Bills
+                </a>
+              </li> -->
+            </ul>
+          </div>
+        </nav>
+        <div class="col-lg-10 col-12 px-0">
+          <?- include('./partials/header') -?>
+          <div class="my-container">
+            <div class="container">
+              <div class="container my-3">
+                <div class="page__section">
+                  <ul class="breadcrumbs breadcrumbs_type5">
+                    <li class="breadcrumbs__item">
+                      <i class="fas fa-home"></i>
+                      <a href="/" class="breadcrumbs__element">Home</a>
+                    </li>
+                    <li class="breadcrumbs__item breadcrumbs__item_active">
+                      <span class="breadcrumbs__element">Expenses</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div
+                class="
+                  col-lg-11 col-md-12 col-12
+                  bg-white
+                  px-0
+                  pb-2
+                  shadow-sm
+                  px-0
+                "
+              >
+                <h4 class="bg-dark text-light p-3 px-0">
+                  <i class="fas fa-tasks"></i>
+                  Expenses
+                </h4>
+                <div class="px-3">
+                  <table cellspacing="5" cellpadding="5" border="0">
+                    <tbody>
+                      <tr>
+                        <td>From Date</td>
+                        <td><input type="text" id="min" name="min" /></td>
+                      </tr>
+                      <tr>
+                        <td>To Date:</td>
+                        <td><input type="text" id="max" name="max" /></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <table
+                    id="expenses_table"
+                    class="table responsive table-striped border"
+                    style="width: 100%; font-size: 14px"
+                  >
+                    <thead>
+                      <tr>
+                        <th>Listing</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                        <th>Recorded</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?for(let i = 0; i < payload.expenses.length; i++){ ?>
+                      <tr>
+                        <td>
+                          <a
+                            href="/listings/view_listing?id=<?=payload.expenses[i].listing_id?>"
+                          >
+                            <?=payload.expenses[i].plot?>,
+                            <?=payload.expenses[i].location?>
+                          </a>
+                        </td>
+                        <td><?=payload.expenses[i].description?></td>
+                        <td>
+                          P
+                          <?=payload.expenses[i].amount?>
+                        </td>
+                        <td><?=payload.expenses[i].type?></td>
+                        <td><?=payload.expenses[i].date_recorded?></td>
+                      </tr>
+                      <? } ?>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.datatables.net/r/dt/jq-2.1.4,jszip-2.5.0,pdfmake-0.1.18,dt-1.10.9,af-2.0.0,b-1.0.3,b-colvis-1.0.3,b-html5-1.0.3,b-print-1.0.3,se-1.0.1/datatables.min.js"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
+    <script src="https://cdn.datatables.net/datetime/1.1.1/js/dataTables.dateTime.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      $(document).ready(function () {
+        var minDate, maxDate;
+        $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+          var min = minDate.val();
+          var max = maxDate.val();
+          var date = new Date(data[4]);
+
+          if (
+            (min === null && max === null) ||
+            (min === null && date <= max) ||
+            (min <= date && max === null) ||
+            (min <= date && date <= max)
+          ) {
+            return true;
+          }
+          return false;
+        });
+
+        minDate = new DateTime($("#min"), {
+          format: "YYYY-MM-DD",
+        });
+
+        maxDate = new DateTime($("#max"), {
+          format: "YYYY-MM-DD",
+        });
+
+        $("#expenses_table").DataTable({
+          pageLength: 10,
+          filter: true,
+          deferRender: true,
+          scrollY: 200,
+          scrollCollapse: true,
+          scroller: true,
+          dom: "lBfrtip",
+          buttons: [
+            {
+              extend: "excelHtml5",
+              text: "Export to Excel",
+              title: "Export Table Data",
+              download: "open",
+              orientation: "landscape",
+              exportOptions: {
+                columns: ":visible",
+              },
+            },
+          ],
+        });
+        $("#min, #max").on("change", function () {
+          $("#expenses_table").DataTable().draw();
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,357 @@
+<html class="no-js" lang="en">
+
+<head>
+    <title>Landlord | New Listing</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://code.jquery.com/jquery-3.3.1.js"
+        integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+        <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/buttons.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+        <script src="/javascripts/bundles/listing_form.js" charset="utf-8"></script>
+
+</head>
+
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+                <nav class="col-lg-2 col-12 d-lg-block d-none px-0">
+                    <div class="sidebar">
+                        <div class=" pl-3 pt-2">
+                          <h3 class="text-primary text-truncate m-0  mt-0">MrsP </h3>
+                          <small class="m-0 text-light">Landlord Admin</small>
+                        </div>
+
+                        <p class="text-muted text-uppercase mb-1 mt-4 px-3">Menu</p>
+
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="/listings/create">
+                                    <i class="fas fa-plus"></i>
+                                    Add New Property
+                                </a>
+                            </li>
+                            <li class="nav-item ">
+                                <a class="nav-link" href="/listings">
+                                    <i class="fas fa-tasks"></i>
+                                    Properties
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/applications">
+                                    <i class="fas fa-tasks"></i>
+                                    Screenings
+                                </a>
+
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/tenants">
+                                    <i class="fas fa-tasks"></i>
+                                    Tenants
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/tenants/transactions">
+                                    <i class="fas fa-tasks"></i>
+                                    Payments
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/listings/expenses">
+                                    <i class="fas fa-tasks"></i>
+                                    Expenses
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/tenants/escalations">
+                                    <i class="fas fa-tasks"></i>
+                                    Escalations
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/tenants/defaulters">
+                                    <i class="fas fa-tasks"></i>
+                                    Defaulters
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/tenants/lapsing">
+                                    <i class="fas fa-tasks"></i>
+                                    Lapsing
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/tenants/service_requests">
+                                    <i class="fas fa-tasks"></i>
+                                    Service Requests
+                                </a>
+                            </li>
+                            <!-- <li class="nav-item">
+                                <a class="nav-link" href="/tenants/tenant_bills">
+                                  <i class="fas fa-tasks"></i>
+                                  Tenant Bills
+                                </a>
+                              </li> -->
+                        </ul>
+                    </div>
+                </nav>
+                <div class="col-lg-10 col-12 px-0">
+                        <?- include('./partials/header') -?>
+                        <div class="my-container">
+
+                <div class="container  my-3">
+                    <h3>Create Your Listing</h3>
+                    <p class="m-0 text-secondary">Please fill in the form below to add a listing to your account</p>
+                </div>
+                <div class="container">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/listings">All Listings</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-primary active" href="/listings/create">Create Listing</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="container">
+                    <div class="row mt-4 justify-content-md-start justify-content-center">
+                        <div class="col-10">
+                            <form id='listing_form' class="form" action="/listings/create" method="post">
+                              <div class="bg-white p-lg-4 p-md-3 p-3 shadow-sm border">
+                                    <h4 class="mb-3">
+                                            <b>General Listing Information</b>
+                                        </h4>
+                                         <!-- new form inputs with the plot and location -->
+                                         <div class="form-row">
+                                            <div class="form-group col-md-6">
+
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend ">
+                                                        <div class="input-group-text bg-primary border-0"> <i
+                                                                class="fas fa-map-marker-alt"></i></div>
+                                                    </div>
+
+                                                    <input type="text" name="location" id="location" placeholder="Location"
+                                                        class="form-control shadow-sm" required>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="form-group col-md-6">
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend ">
+                                                        <div class="input-group-text bg-primary border-0">
+                                                            <i class="fas fa-street-view"></i>
+                                                        </div>
+                                                    </div>
+                                                    <input type="text" name="plot" id="plot"
+                                                        placeholder="Plot"
+                                                        class="form-control shadow-sm"
+                                                        required>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                           <!-- row for the block and unit -->
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend ">
+                                                        <div class="input-group-text bg-primary border-0">
+                                                            <i class="fas fa-building"></i>
+                                                        </div>
+                                                    </div>
+                                                    <input type="text" name="block" id="block"
+                                                        placeholder="Block"
+                                                        class="form-control shadow-sm"
+                                                        >
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-md-6">
+
+                                                <div class="input-group mb-2">
+                                                    <div class="input-group-prepend ">
+                                                        <div class="input-group-text bg-primary border-0"> <i
+                                                                class="fas fa-home"></i></div>
+                                                    </div>
+
+                                                    <input type="text" name="unit" id="unit" placeholder="Unit"
+                                                        class="form-control shadow-sm" >
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                         <!-- new row for class and type -->
+                                         <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                             <small class="form-text text-muted mt-0">
+                                                 <i>* Property class</i>
+                                             </small>
+                                                 <select class="form-control shadow-sm" name="class"
+                                                     id="property_class">
+                                                     <option value="Plot" name="type">Plot</option>
+                                                     <option value="Block" name="type">Block</option>
+                                                     <option value="Unit" name="type">Unit</option>
+                                                 </select>
+                                             </div>
+                                             <div class="form-group col-md-6">
+                                                 <small class="form-text text-muted mt-0">
+                                                     <i>* Property type</i>
+                                                 </small>
+                                                 <select class="form-control shadow-sm" name="type"
+                                                     id="property_type">
+                                                     <option value="Residential" name="type">Residential</option>
+                                                     <option value="Commercial" name="type">Commercial</option>
+                                                     <option value="Apartment" name="type">Apartment</option>
+                                                     <option value="Condomonium" name="type">Condomonium</option>
+ 
+                                                     <option value="Other" name="type">Other</option>
+                                                 </select>
+                                             </div>
+                                         </div>
+                              </div>
+
+
+                                <div class="bg-white p-lg-4 p-md-3 p-3  mt-3 shadow-sm border">
+                                <h4 class="mb-3">
+                                   <b> Listing features and amenities</b>
+                                </h4>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-3">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend ">
+                                                <div class="input-group-text bg-primary border-0">
+                                                    <i class="fas fa-bed"></i>
+                                                </div>
+                                            </div>
+                                            <input type="number" min="0" name="num_bedrooms" id="num_bedrooms"
+                                                placeholder="Bedrooms" class="form-control shadow-sm" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-3">
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend ">
+                                                <div class="input-group-text bg-primary border-0">
+                                                    <i class="fas fa-bath"></i>
+                                                </div>
+                                            </div>
+                                            <input type="number" min="0" name="num_bathrooms" id="num_bathrooms"
+                                                placeholder="Bathrooms" class="form-control shadow-sm" required>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                </div>
+                                <div class="bg-white p-lg-4 p-md-3 p-3  mt-3 shadow-sm border">
+                                <h4 class="mb-3">
+                                    <b>Select the appropriate presets</b>
+
+                                </h4>
+
+                                <small class="form-text text-muted mt-0">
+                                    <i>* Presets can be created later from the listing view panel.</i>
+                                </small>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+
+                                        <select class="form-control shadow-sm"
+                                            name="rental_preset" id="rental_preset">
+                                            <? for(let i = 0; i < payload.rental_presets.length; i++){ ?>
+                                            <option value="<?= payload.rental_presets[i].ID ?>"
+                                                name="<?= payload.rental_preset ?>">
+                                                <?= payload.rental_presets[i].name ?></option>
+                                            <?}?>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6">
+
+                                        <select class="form-control shadow-sm"
+                                            name="screening_preset" id="screening_preset">
+                                            <? for(let i = 0; i < payload.screening_presets.length; i++){ ?>
+                                            <option value="<?= payload.screening_presets[i].ID ?>"
+                                                name="<?= payload.screening_preset ?>">
+                                                <?= payload.screening_presets[i].name ?></option>
+                                            <?}?>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+
+                                    <textarea required id="description" name="description" style="margin: 10px;" placeholder="Listing Description..." class="form-control" rows="8" cols="80"></textarea>
+
+
+                                </div>
+
+
+                                <label id="toast_message"></label>
+                                <div id="picture_container" class="row mt-4">
+                                    <!-- 3 -->
+
+                                </div>
+
+                                <div class="row justify-content-center mt-3">
+                                    <div class="form-group col-md-8 d-flex justify-content-center justify-content-lg-center">
+                                        <button id="upload_pictures" type="button" class="btn rounded btn-secondary btn-lg w-50 text-light shadow border-0">Upload Listing Images</button>
+
+                                    </div>
+                                </div>
+
+
+                                </div>
+                                <!-------------------------------------------------------------------------->
+
+                                <div class="row justify-content-center mt-3">
+                                    <div class="form-group col-md-12 d-flex justify-content-center justify-content-lg-center">
+                                        <button type="button" class="btn rounded btn-secondary btn-lg w-50 text-light shadow border-0" id="upload_listing">
+                                            Create Listing
+                                            <i class="fas fa-arrow-circle-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                        </div>
+                        <input type="hidden" name="pictures" id="pictures"> <!-- 2 -->
+                        <input type="hidden" name="date_created" value="<?=new Date().toDateString()?>">
+                        <input type="hidden" id="listing_id" name="listing_id" value="-1">
+                        <input type="hidden" id="units_available" name="units_available" value="">
+                        </form>
+                    </div>
+                </div>
+                <footer class="pt-5">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <hr>
+                                <p class="text-muted">Mrs.P &copy Copyright 2021</p>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+
+
+        </div>
+       </div>
+    </div>
+
+    <span id="payload" hidden>
+        <?= JSON.stringify(payload) ?>
+    </span>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/javascripts/listing_form.js" charset="utf-8"></script>
+
+</body>
+
+</html>

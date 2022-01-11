@@ -1,0 +1,1783 @@
+<html class="no-js" lang="en">
+
+<head>
+    <title>Landlord | Listing</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+            integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css"
+            href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/dt/jq-2.1.4,jszip-2.5.0,pdfmake-0.1.18,dt-1.10.9,af-2.0.0,b-1.0.3,b-colvis-1.0.3,b-html5-1.0.3,b-print-1.0.3,se-1.0.1/datatables.min.css"/>
+        <link rel="stylesheet" href="/css/bootstrap.css">
+        <link rel="stylesheet" href="/css/styles.css">
+        <link rel="stylesheet" href="/css/table.css">
+        <link rel="stylesheet" href="/css/breadcrumbs.css">
+
+
+
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+          <nav class="col-lg-2 col-12 d-lg-block d-none px-0">
+              <div class="sidebar">
+                  <div class=" pl-3 pt-2">
+                    <h3 class="text-primary text-truncate m-0  mt-0">MrsP </h3>
+                    <small class="m-0 text-light">Landlord Admin</small>
+                  </div>
+
+                  <p class="text-muted text-uppercase mb-1 mt-4 px-3">Menu</p>
+
+                  <ul class="nav flex-column">
+                      <li class="nav-item">
+                          <a class="nav-link " href="/listings/create">
+                              <i class="fas fa-plus"></i>
+                              Add New Property
+                          </a>
+                      </li>
+                      <li class="nav-item ">
+                          <a class="nav-link active" href="/listings">
+                              <i class="fas fa-tasks"></i>
+                              Properties
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="/applications">
+                              <i class="fas fa-tasks"></i>
+                              Screenings
+                          </a>
+
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="/tenants">
+                              <i class="fas fa-tasks"></i>
+                              Tenants
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="/tenants/transactions">
+                              <i class="fas fa-tasks"></i>
+                              Payments
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="/listings/expenses">
+                              <i class="fas fa-tasks"></i>
+                              Expenses
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="/tenants/escalations">
+                              <i class="fas fa-tasks"></i>
+                              Escalations
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="/tenants/defaulters">
+                              <i class="fas fa-tasks"></i>
+                              Defaulters
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="/tenants/lapsing">
+                              <i class="fas fa-tasks"></i>
+                              Lapsing
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="/tenants/service_requests">
+                              <i class="fas fa-tasks"></i>
+                              Service Requests
+                          </a>
+                      </li>
+                      <!-- <li class="nav-item">
+                        <a class="nav-link" href="/tenants/tenant_bills">
+                          <i class="fas fa-tasks"></i>
+                          Tenant Bills
+                        </a>
+                      </li> -->
+                  </ul>
+              </div>
+          </nav>
+            <div class="col-lg-10 col-12 px-0">
+                <?- include('./partials/header') -?>
+                <div class="container">
+
+                    <div class="container  my-3">
+                        <h3><?= payload.listing.location ?>, <?= payload.plot ?> </h3>
+                        <p class="m-0 text-secondary">Edit, Hide or Delete listing</p>
+                    </div>
+                    <div class="container">
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active text-primary" href="#">Listing Information</a>
+                            </li>
+
+                        </ul>
+                    </div>
+
+
+
+                    <div class="container">
+                        <div class="d-lg-flex d-md-flex justify-content-lg-between justify-content-md-between">
+                            <div class="col-lg-4 col-md-4 col-12 mt-4 mr-lg-2 px-0 bg-white border shadow-sm">
+                                <section class="container pb-2">
+                                    <div class="row mb-3">
+                                        <div class="col-12 p-0">
+                                            <h5 class="bg-dark text-light p-3 rounded-0">
+                                                <b>Listing Options</b>
+                                            </h5>
+                                        </div>
+                                    </div>
+                                    <a href="/listings/edit?id=<?=payload.listing.ID?>" id="edit_button" class="m-0 text-primary"><i class="far fa-edit"></i>
+                                        <u>Edit Listing</u>
+                                    </a>
+                                  </br>
+                                    <p class="mt-1">Make changes to your listing.</p>
+                                    <hr class="mb-1 w-25 ml-1">
+
+                                    <form id="hide_form" action="/listings/toggle_listing_visibility" method="post">
+                                        <input type="hidden" name="listing_id" value="<?=payload.listing.ID?>">
+                                        <input type="hidden" name="visible" id="visible">
+                                    </form>
+
+                                    <?if(payload.listing.visible === 'false'){ ?>
+                                    <a href="#" id="hide_button" class="m-0 text-primary" onclick="hide_listing('true', <?=payload.listing.ID?>)"><i class="far fa-minus-square"></i> <u id="visibility">Unhide Listing</u></a>
+                                    <?}else{?>
+
+                                    <a href="#" id="hide_button" class="m-0 text-primary" onclick="hide_listing('false', <?=payload.listing.ID?>);"><i class="far fa-minus-square"></i> <u id="visibility">Hide Listing</u></a></br>
+                                    <p for="hide_button" class="mt-1">Makes listing visible to only you and active
+                                        tenants.
+                                    </p>
+                                    <?}?>
+                                    <hr class="mb-1 w-25 ml-1">
+                                    <form id="delete_form" action="/listings/delete" method="post">
+                                        <input type="hidden" name="listing_id" value="<?=payload.listing.ID?>">
+                                        <a id="delete_button" class="m-0 text-primary" data-toggle="modal" data-target="#delete-modal" > <i class="far fa-trash-alt"></i>
+                                            <u>Delete Listing</u></a>
+                                        </br>
+                                        <p class="">Deletes listing & all active tenants associated with this listing.</p>
+                                        <hr class="mb-1 w-25 ml-1">
+                                    </form>
+
+                                    <?if(payload.listing.show_offers === 'true'){ ?>
+                                    <a  id="offers_button" class="m-0 text-primary" onclick="toggle_offer_visibility('false', <?=payload.listing.ID?>);">
+                                        <i class="fas fa-comment-dollar"></i>
+                                        <u id="offers">Hide Offers</u></a></br>
+
+                                    <?}else{?>
+                                    <a  id="offers_button" class="m-0 text-primary" onclick="toggle_offer_visibility('true', <?=payload.listing.ID?>);">
+                                        <i class="fas fa-comment-dollar"></i>
+                                        <u id="offers">Show Offers</u>
+                                    </a>
+                                    </br>
+
+                                    <?}?>
+                                    <p class="mt-1" id="offers_2"> Choose whether users can see competing Rental Offers on this listing. </p>
+                                    <hr class="mb-1 w-25 ml-1">
+
+
+                                </section>
+                            </div>
+
+                            <!-- Added new form view with added fields -->
+                            <div class="col-12 col-lg-7 col-md-7 mt-4 border px-0  bg-white shadow-sm">
+                                <div class="container">
+                                    <div class="row mb-3">
+                                        <div class="col-12 p-0">
+                                            <h5 class="bg-dark text-light p-3 rounded-0"><b>Listing</b>
+                                            </h5>
+                                        </div>
+                                    </div>
+                                    <div class=" mt-3">
+                                        <h6><b>Overview</b></h6>
+                                        <hr class="mt-1">
+                                        <!-- Added the block and unit details -->
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <p><span class="text-muted">Property Class: </span> <?=payload.listing.class ?>
+                                                </p>
+                                            </div>
+                                            <div class="col-5">
+                                                <p><span class="text-muted">Property Type: </span> <?=payload.listing.type ?>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <p><span class="text-muted">Plot: </span> <?=payload.listing.plot ?>
+                                                </p>
+                                            </div>
+                                            <div class="col-5">
+                                                <p><span class="text-muted">Block: </span> <?=payload.listing.block === null ? "N/A" : payload.listing.block  ?>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <p><span class="text-muted">Unit: </span> <?=payload.listing.unit === null ? "N/A" : payload.listing.unit ?>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <!-- <div class="row">
+                                            <div class="col-5">
+                                                <p><span class="text-muted">Type: </span> <?=payload.listing.type ?>
+                                                </p>
+                                            </div>
+                                            <div class="col-4">
+                                                <p><span class="text-muted">Units Available: </span>
+                                                    <b><?=payload.listing.units_available ?></b> </p>
+                                            </div>
+                                        </div> -->
+
+                                    </div>
+                                </div>
+                                <div class="container mt-4">
+                                    <h6><b>Description</b></h6>
+                                    <hr class="mt-1">
+                                    <div class="row">
+                                        <div class="container">
+                                            <p>
+                                                <?= payload.listing.description ?>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- this will dynamically render amenities if the property is of unit class -->
+                                <?if(payload.listing.class === "Unit"){?>
+                                    <div class="container mt-4">
+                                        <h6><b>Features</b></h6>
+                                        <hr class="mt-1">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <p><span class="text-muted">Bathrooms: </span>
+                                                    <b><?=payload.listing.num_bathrooms ?></b> </p>
+                                            </div>
+                                            <div class="col-5">
+                                                <p> <span class="text-muted">Bedrooms: </span>
+                                                    <b><?=payload.listing.num_bedrooms ?></b> </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?}else{?>
+                                    <?}?>
+                                
+                                
+                            </div>
+
+                        </div>
+
+
+                        <div class="d-lg-flex d-md-flex justify-content-lg-around flex-wrap">
+                            <div class="col-12  mt-4 px-0 bg-white border shadow-sm">
+
+                                <div class="container mb-4">
+                                    <div class="row">
+                                        <div class="col-12 p-0">
+                                            <p id=""></p>
+                                            <h5 class="bg-dark text-light p-3 rounded-0">
+                                                <b>Financial Overview</b>
+                                            </h5>
+
+
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+
+                                        <div class="col-lg-4 col-md-12 p-3  d-flex flex-column align-items-center ">
+
+                                            <h4 class="p-2">Vacancy Rate</h4>
+                                            <div class="chart-container p-2" style="position: relative; height:250px; width:500px">
+                                                <canvas id="vacancy_chart"></canvas>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-lg-4 col-md-12 p-3 d-flex flex-column align-items-center ">
+                                            <h4 class="p-2">Net Operating Income</h4>
+
+                                            <h2 id="net_operating_income" class="p-2 text-success">-</h2>
+
+                                            <h4 class="p-2 mt-5">Gross Potential Income</h4>
+
+                                            <h2 id="gross_potential_income" class="p-2" >-</h2>
+
+
+                                        </div>
+
+                                        <div class="col-lg-4 col-md-12 p-3  d-flex flex-column align-items-center">
+                                            <h4 class="p-2">Potential Credit Loss</h4>
+
+
+                                            <h2 id="potential_credit_loss" class="p-2">-</h2>
+
+                                            <h4 class="p-2 mt-5">Actual Credit Loss</h4>
+
+                                            <h2 id="actual_credit_loss" class="p-2 mb-4 text-danger" >-</h2>
+
+                                            <label for="potential_credit_loss">    <b>  <small id="credit_loss_label">Potential Credit Loss %</small> </b> </label>
+                                            <div class="form-inline">
+
+                                                <input class="form-control mb-2" style="width: 100px;" type="number" step="0.5" name="potential_credit_loss"  id="potential_credit_loss_input" >
+
+                                                <button id="update_credit_loss_button" onclick="update_credit_loss()"  type="button" step="0.01" name="button" class="btn rounded-pill btn-secondary btn-sm m-2">Update %</button>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+                    <div class="d-lg-flex d-md-flex justify-content-lg-center flex-wrap">
+                        <div class="col-lg-10 col-12 mt-4 px-0 bg-white border shadow-sm">
+                            <div class="container">
+                                <div class="row mb-1">
+                                    <div class="col-12 p-0">
+                                        <p id=""></p>
+                                        <h5 class="bg-dark text-light p-3 rounded-0"><b>Income</b>
+                                        </h5>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12 p-0">
+                                        <h5 class="bg-light text-light p-3 rounded-0">
+                                         <span style="color: #484848;"><b >Expected Monthly</b></span>
+                                        </h5>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-1">
+
+                                    <div class="col-4 d-flex flex-column align-items-center">
+                                       <h4>Rental</h4>
+
+                                        <h3 id="expected_monthly_rental" class="mb-4" >-</h3>
+                                    </div>
+
+                                    <div class="col-4 d-flex flex-column align-items-center">
+                                        <h4>Other</h4>
+
+                                         <h3 id="expected_monthly_other" class="mb-4" >-</h3>
+                                    </div>
+
+                                    <div class="col-4 d-flex flex-column align-items-center">
+                                        <h4>Total</h4>
+
+                                         <h3 id="expected_monthly_total" class="mb-4" > - </h3>
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-3 justify-content-center ">
+                                    <div class="col-12 p-0">
+                                        <h5 class="bg-light text-light p-3 rounded-0">
+                                         <span style="color: #484848;"><b >Status Reporting</b></span>
+                                        </h5>
+
+                                        <blockquote class="blockquote">
+                                             <p class="m-4">Show financial records by selecting any time frame, and optionally filter the table by Payment Status. Use the Search Bar in the table to find particular records, and click on column headers to sort records by that columns value.</p>
+                                         </blockquote>
+
+                                    </div>
+                                </div>
+
+
+                                <div class="d-flex justify-content-center">
+                                    <div class="d-flex flex-row flex-wrap justify-content-around col-lg-8 col-12">
+
+
+                                            <div class="d-flex flex-column  mx-1">
+
+                                                <input class="form-control mx-1" type="date" name="from" id="report_from_date">
+
+                                            </div>
+
+                                            <div class="d-flex flex-column  mx-1">
+
+                                                <p class="mx-1 mt-2 text-center">To</p>
+
+                                            </div>
+
+                                            <div class="d-flex flex-column mx-1">
+
+                                                <input class="form-control" type="date" name="to" id="report_to_date">
+
+                                            </div>
+
+                                            <div class="d-flex flex-column col-md-12 col-lg-3 mx-1">
+
+                                                <button  class="btn rounded-pill btn-secondary btn-sm form-control" onclick="filter_payments()"  id="status_report_button">
+
+                                                    Show
+                                                </button>
+
+                                            </div>
+
+
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-center shadow m-3 p-3">
+                                    <div class="d-flex flex-row flex-wrap justify-content-around col-lg-10 col-12">
+
+                                        <div class="col-3 p-3 d-flex flex-column align-items-center ">
+
+                                            <input class="form-control" type="radio" name="payment_filter" id="payment_filter" value="due">
+
+
+                                            <p>
+                                                <h5>Due</h5>
+                                            </p>
+
+                                            <p id="outstanding_label">
+                                              -
+                                            </p>
+
+
+
+                                        </div>
+
+                                        <div class="col-3 p-3 d-flex flex-column align-items-center ">
+
+                                            <input class="form-control" type="radio" name="payment_filter" id="payment_filter" value="paid">
+
+
+                                            <p>
+                                                <h5>Paid</h5>
+
+                                            </p>
+
+                                            <p id="paid_label">
+                                             -
+                                            </p>
+
+
+
+                                        </div>
+
+                                        <div class="col-3 p-3 d-flex flex-column align-items-center ">
+
+                                            <input class="form-control" type="radio" name="payment_filter" id="payment_filter" value="late">
+
+
+                                            <p>
+                                                <h5>Late</h5>
+                                            </p>
+
+                                            <p id="late_label">
+                                              -
+                                            </p>
+
+
+
+                                        </div>
+
+                                        <div class="col-3 p-3 d-flex flex-column align-items-center ">
+
+                                            <input class="form-control" type="radio" name="payment_filter" id="payment_filter" value="all">
+
+
+                                            <p>
+                                                <h5>All</h5>
+                                            </p>
+
+                                            <p id="all_label">
+                                              -
+                                            </p>
+
+
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-center shadow-sm  m-3 p-3 ">
+
+                                    <div class="container col-12">
+                                        <table id="income_report_table" class="table responsive table-striped" style="width:70%;font-size: 12px;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>
+                                                            Tenant
+                                                        </th>
+                                                        <th>Description </th>
+                                                        <th>Amount</th>
+
+                                                        <th>Billing Date</th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="income_report_table_body">
+
+                                                </tbody>
+                                            </table>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- utility form -->
+                    <div class="d-lg-flex d-md-flex justify-content-lg-around flex-wrap">
+
+                        <div class="col-lg-10 col-12 mt-4 px-0 bg-white border shadow-sm">
+
+                                <section class="container pb-2">
+
+                                    <div class="row mb-1">
+                                        <div class="col-12 p-0">
+                                            <p id=""></p>
+                                            <h5 class="bg-dark text-light p-3 rounded-0">
+                                                <b>Utility Bills</b>
+                                            </h5>
+                                        </div>
+                                        <blockquote class="blockquote">
+                                            <p class="m-4">*Utility Bills should be addded monthly before the tenants billing date</p>
+                                        </blockquote>
+                                    </div>
+
+                                    <!-- <div class="row mb-1">
+
+                                        <div class="col-4 d-flex flex-column align-items-center">
+                                           <h4 class="p-2">Once-off</h4>
+                                            <h3 id="once_off_label" class="p-2 mb-4" > - </h3>
+                                        </div>
+
+                                        <div class="col-4 d-flex flex-column align-items-center">
+                                            <h4 class="p-2">Monthly</h4>
+                                            <h3 id="monthly_label" class="p-2 mb-4" > - </h3>
+                                        </div>
+
+                                        <div class="col-4 d-flex flex-column align-items-center">
+                                            <h4 class="p-2">Total</h4>
+                                            <h3 id="total_expense_label" class="p-2 mb-4" > - </h3>
+                                        </div>
+
+                                    </div> -->
+
+                                    <div class="col-12">
+                                        <div class="container col-9">
+                                                <!-- Water bill input -->
+                                                <div class="row mb-1">
+                                                    <div class="col-lg-4 col-md-4 col-4">
+                                                        <label id = "electrity">Electrity</label>
+                                                        <!-- <input class="form-control" type="text" id="expense_name" placeholder="Expense"> -->
+                                                    </div>
+
+                                                    <div class="col-lg-4 col-md-4 col-4">
+                                                        <!-- <label id = "water">Water</label> -->
+                                                        <input class="form-control" type="number" id="electricity_amount" placeholder="Amount">
+                                                    </div>
+
+                                                    <!-- <div class="col-lg-4 col-md-4 col-4">
+                                                        <div class="row">
+                                                            <form id="e" class="form-inline">
+                                                                    <div class="radio ml-3">
+                                                                        <label>
+                                                                          <span class="button">
+                                                                              <input class="form-control" type="radio" name="expense_type" value="monthly" id="expense_type" checked>
+                                                                          </span>
+                                                                          <span class="question-label m-1">  <small>Monthly</small> </span>
+                                                                        </label>
+                                                                    </div>
+
+                                                                    <div class="radio">
+                                                                      <label>
+                                                                        <span class="button">
+                                                                            <input class="form-control" type="radio"  name="expense_type" value="once-off" id="expense_type">
+
+                                                                        </span>
+
+                                                                        <span class="question-label ml-1"> <small>Once-off</small>  </span>
+                                                                      </label>
+                                                                    </div>
+
+                                                            </form>
+
+                                                        </div>
+
+                                                    </div> -->
+
+                                                </div>
+
+                                                <!-- Electricity bill input -->
+                                                <div class="row mb-1">
+                                                    <div class="col-lg-4 col-md-4 col-4">
+                                                        <label id = "electrity">Water</label>
+                                                    </div>
+
+                                                    <div class="col-lg-4 col-md-4 col-4">
+                                                        <input class="form-control" type="number" id="water_amount" placeholder="Amount">
+                                                    </div>
+
+                                                    <!-- <div class="col-lg-4 col-md-4 col-4">
+                                                        <div class="row">
+                                                            <form id="e" class="form-inline">
+
+
+                                                                    <div class="radio ml-3">
+                                                                        <label>
+                                                                          <span class="button">
+                                                                              <input class="form-control" type="radio" name="expense_type" value="monthly" id="expense_type" checked>
+
+                                                                          </span>
+                                                                          <span class="question-label m-1">  <small>Monthly</small> </span>
+                                                                        </label>
+                                                                    </div>
+
+                                                                    <div class="radio">
+                                                                      <label>
+                                                                        <span class="button">
+                                                                            <input class="form-control" type="radio"  name="expense_type" value="once-off" id="expense_type">
+
+                                                                        </span>
+
+                                                                        <span class="question-label ml-1"> <small>Once-off</small>  </span>
+                                                                      </label>
+                                                                    </div>
+
+                                                            </form>
+
+                                                        </div>
+
+                                                    </div> -->
+
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-12">
+                                                        <button onclick="add_utilityBills()"  class="btn rounded-pill btn-secondary btn-sm form-control"  id="add_expense_button">
+                                                            <i class="fas fa-plus"></i>
+                                                            Add Utility Bills
+                                                        </button>
+                                                    </div>
+
+                                                </div>
+                                                <hr>
+                                                <div class="limiter">
+                                                    <div class="container-table100">
+                                                        <div class="wrap-table100">
+                                                            <div class="table100">
+
+
+                                                                <!-- <table>
+
+                                                                    <tbody id="expense_table">
+
+                                                                    </tbody>
+                                                                </table> -->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </section>
+
+                            </div>
+
+                    </div>
+
+
+                    <div class="d-lg-flex d-md-flex justify-content-lg-around flex-wrap">
+
+                        <div class="col-lg-10 col-12 mt-4 px-0 bg-white border shadow-sm">
+
+                                <section class="container pb-2">
+
+                                    <div class="row mb-1">
+                                        <div class="col-12 p-0">
+                                            <p id=""></p>
+                                            <h5 class="bg-dark text-light p-3 rounded-0">
+                                                <b>Expenses</b>
+                                            </h5>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-1">
+
+                                        <div class="col-4 d-flex flex-column align-items-center">
+                                           <h4 class="p-2">Once-off</h4>
+                                            <h3 id="once_off_label" class="p-2 mb-4" > - </h3>
+                                        </div>
+
+                                        <div class="col-4 d-flex flex-column align-items-center">
+                                            <h4 class="p-2">Monthly</h4>
+                                            <h3 id="monthly_label" class="p-2 mb-4" > - </h3>
+                                        </div>
+
+                                        <div class="col-4 d-flex flex-column align-items-center">
+                                            <h4 class="p-2">Total</h4>
+                                            <h3 id="total_expense_label" class="p-2 mb-4" > - </h3>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="container col-9">
+
+                                                <div class="row mb-1">
+                                                    <div class="col-lg-4 col-md-4 col-4">
+                                                        <input class="form-control" type="text" id="expense_name" placeholder="Expense">
+                                                    </div>
+
+                                                    <div class="col-lg-4 col-md-4 col-4">
+                                                        <input class="form-control" type="number" id="expense_amount" placeholder="Amount">
+                                                    </div>
+
+                                                    <div class="col-lg-4 col-md-4 col-4">
+                                                        <div class="row">
+                                                            <form id="e" class="form-inline">
+
+
+                                                                    <div class="radio ml-3">
+                                                                        <label>
+                                                                          <span class="button">
+                                                                              <input class="form-control" type="radio" name="expense_type" value="monthly" id="expense_type" checked>
+
+                                                                          </span>
+                                                                          <span class="question-label m-1">  <small>Monthly</small> </span>
+                                                                        </label>
+                                                                    </div>
+
+                                                                    <div class="radio">
+                                                                      <label>
+                                                                        <span class="button">
+                                                                            <input class="form-control" type="radio"  name="expense_type" value="once-off" id="expense_type">
+
+                                                                        </span>
+
+                                                                        <span class="question-label ml-1"> <small>Once-off</small>  </span>
+                                                                      </label>
+                                                                    </div>
+
+                                                            </form>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="row mb-3">
+                                                    <div class="col-12">
+                                                        <button onclick="add_expense()"  class="btn rounded-pill btn-secondary btn-sm form-control"  id="add_expense_button">
+                                                            <i class="fas fa-plus"></i>
+                                                            Add
+                                                        </button>
+                                                    </div>
+
+                                                </div>
+                                                <hr>
+                                                <div class="limiter">
+                                                    <div class="container-table100">
+                                                        <div class="wrap-table100">
+                                                            <div class="table100" style="height: 200px;overflow:hidden; overflow-y:scroll;">
+
+
+                                                                <table>
+                                                                    <tbody id="expense_table">
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </section>
+
+                            </div>
+
+                    </div>
+
+
+                    <div class="d-lg-flex d-md-flex justify-content-lg-around flex-wrap">
+
+                        <div class="col-12 col-lg-5 col-md-12 mt-5 bg-white border shadow-sm">
+
+                            <div class="mb-4">
+                                <div class="row mb-3">
+                                    <div class="col-12 p-0">
+                                        <p id=""></p>
+                                        <h5 class="bg-dark text-light p-3 rounded-0">
+                                            <b> Active Tenants (<?=payload.active_tenants.length?>)</b>
+                                        </h5>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2">
+
+                                    <div class="col-lg-6 col-12">
+                                        <a href="#" class="btn btn-secondary btn-sm rounded-pill" data-toggle="modal" data-target="#add_tenant_modal" id="add_tenant_button">
+                                            <i class="fas fa-plus"></i> New
+                                            Tenant
+                                        </a>
+                                    </div>
+
+                                    <div class="col-lg-6 col-12">
+                                        <h4></h4>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="container">
+                                <div class="row">
+
+                                    <div class="col-12">
+                                        <div class="limiter">
+                                            <div class="container-table100">
+                                                <div class="wrap-table100">
+                                                    <div class="table100">
+                                                        <div class="row mb-2">
+                                                            <div class="col-12">
+                                                                <h4></h4>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <table>
+                                                            <tbody>
+
+                                                                <?for(let i = 0; i < payload.active_tenants.length; i++){ ?>
+                                                                <tr>
+                                                                    <td class="column1">
+                                                                        <p><?=payload.active_tenants[i].fullname?>
+                                                                            <br> <small> <b> <?=payload.active_tenants[i].first_name?>  </b> </small>
+                                                                        </p>
+                                                                    </td>
+
+                                                                    <td class="column3">
+                                                                        <p>
+                                                                            Lease
+                                                                            <br> <small> <b>(<?=payload.active_tenants[i].tenancy_period?> Months)</b> </small>
+                                                                        </p>
+                                                                    </td>
+                                                                    <td class="column4">
+                                                                      <p>
+                                                                          Code
+                                                                          <br> <small> <b><?=payload.active_tenants[i].rental_code?></b> </small>
+                                                                      </p>
+                                                                    </td>
+                                                                    <td class="column5 text-lg-center text-md-center text-left">
+                                                                        <p> <a href="/tenants/view_tenant?id=<?=payload.active_tenants[i].ID?>">
+                                                                                View
+                                                                            </a>
+                                                                        </p>
+                                                                    </td>
+                                                                </tr>
+                                                                <?}?>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-12 col-lg-5 col-md-12 mt-5 bg-white border shadow-sm">
+                            <div class="mb-4">
+                                <div class="row mb-3">
+                                    <div class="col-12 p-0">
+                                        <p id=""></p>
+                                        <h5 class="bg-dark text-light p-3 rounded-0">
+                                            <b> Rental Presets</b>
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="container">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <?if(payload.listing.RentalPresetID === 0){?>
+                                            <div id="rental_default_label" class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                <label id="alert_message">Please apply a default Rental Preset to this listing.</label>
+                                                <button type="button" class="close" data-hide="alert" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <?}?>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="limiter">
+                                                <div class="container-table100">
+                                                    <div class="wrap-table100">
+                                                        <div class="table100">
+                                                            <div class="row mb-2">
+                                                                <div class="col-lg-6 col-12">
+                                                                    <a href="#" class="btn rounded-pill btn-secondary btn-sm" data-toggle="modal" data-target="#exampleModalLong" id="create_rental_preset_button">
+                                                                        <i class="fas fa-plus"></i> New
+                                                                        preset
+                                                                    </a>
+                                                                </div>
+                                                                <div class="col-lg-6 col-12">
+                                                                    <h4></h4>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div style="height: 260px; overflow:hidden; overflow-y:scroll;">
+
+                                                                <table  >
+                                                                    <tbody>
+                                                                        <?for(let i = 0; i < payload.rental_presets.length; i++){ ?>
+                                                                        <?if(payload.rental_presets[i].presetdefault != "false"){?>
+                                                                        <tr>
+                                                                            <td class="column1">
+                                                                                <p><?=payload.rental_presets[i].name?>
+                                                                                </p>
+                                                                            </td>
+                                                                            <td class="column2 text-lg-center text-md-center text-center">
+                                                                                <p> <a href="#" class="text-center mt-2" data-toggle="modal" data-target="#exampleModalLong" data-rental_preset="<?=JSON.stringify(payload.rental_presets[i]) ?>">
+                                                                                        Edit
+                                                                                    </a>
+                                                                                </p>
+                                                                            </td>
+                                                                            <?if(payload.rental_presets[i].ID != payload.listing.RentalPresetID){?>
+                                                                            <td class="column4 text-lg-center text-md-center text-center">
+                                                                                <p>
+                                                                                    <button id="<?=payload.rental_presets[i].name ?> <?=payload.rental_presets[i].ID?>"
+                                                                                         style="color: white; font-size: 1em;" type="button"
+                                                                                          class="btn btn-sm btn-warning mt-3" onclick="set_as_default('rental_preset', <?=payload.rental_presets[i].ID?>,'<?=payload.rental_presets[i].name?>', <?=payload.listing.ID?>)">Set
+                                                                                        as Default</button>
+                                                                                </p>
+    
+                                                                            </td>
+                                                                            <?}else{?>
+                                                                                <td class="column4 text-lg-center text-md-center text-center"></td>
+                                                                            <?}?>
+    
+                                                                            <td class="column3 text-lg-center text-md-center text-center">
+    
+                                                                                    <form action="/listings/delete_rental_preset" method="post">
+    
+                                                                                        <input type="hidden" name="rental_preset_id" value="<?=payload.rental_presets[i].ID?>">
+                                                                                        <input type="hidden" name="listing_id" value="<?=payload.listing.ID?>">
+                                                                                        <button
+                                                                                        type="submit"
+                                                                                         style="color: white; font-size: 1em;"  class="btn btn-sm btn-danger mt-3">
+                                                                                        Delete </button>
+                                                                                    </form>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <?}?>
+                                                                        <?}?>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+
+                    <div class="d-lg-flex d-md-flex justify-content-lg-around flex-wrap">
+
+                        <div class="col-12 col-lg-5 col-md-12 mt-5 bg-white border shadow-sm">
+
+                            <div class="mb-4">
+                                <div class="row mb-3">
+                                    <div class="col-12 p-0">
+                                        <p id=""></p>
+                                        <h5 class="bg-dark text-light p-3 rounded-0">
+                                            <b>Pending Tenants(<?=payload.pending_tenants.length?>)</b>
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="container">
+
+                                <div class="row">
+
+                                    <div class="col-12">
+                                        <div class="limiter">
+                                            <div class="container-table100">
+                                                <div class="wrap-table100">
+                                                    <div class="table100">
+                                                        <div class="row mb-2">
+                                                            <div class="col-12">
+                                                                <h4></h4>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div style="height: 260px; overflow:hidden; overflow-y:scroll;">
+                                                            <table>
+                                                                <tbody>
+    
+                                                                    <?for(let i = 0; i < payload.pending_tenants.length; i++){ ?>
+                                                                    <tr>
+                                                                        <td class="column1">
+                                                                            <p>
+                                                                                <?=payload.pending_tenants[i].email_address?>
+    
+                                                                            </p>
+                                                                        </td>
+    
+    
+    
+                                                                        <td class="column3">
+                                                                            <p>
+                                                                                Rental Code
+                                                                                <br>
+                                                                                <small> <b>(<?=payload.pending_tenants[i].rental_code?></b>) </small>
+    
+                                                                            </p>
+                                                                        </td>
+                                                                        <td class="column4 text-lg-center text-md-center text-left">
+                                                                            <p>
+                                                                                <form  action="/tenants/revoke_code" method="post">
+                                                                                    <input type="hidden" name="pending_tenant_id" value="<?=payload.pending_tenants[i].ID?>">
+                                                                                    <input type="hidden" name="listing_id" value="<?=payload.listing.ID?>">
+                                                                                    <input type="hidden" name="rental_code" value="<?=payload.pending_tenants[i].rental_code?>">
+                                                                                    <button type="submit" name="button" style="color: white;" class="btn btn-sm btn-danger">Revoke </button>
+                                                                                </form>
+    
+                                                                            </p>
+                                                                        </td>
+    
+    
+    
+    
+                                                                    </tr>
+                                                                    <?}?>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-12 col-lg-5 col-md-12 mt-5 bg-white border shadow-sm">
+
+                            <div class="mb-4">
+                                <div class="row mb-3">
+                                    <div class="col-12 p-0">
+                                        <p id=""></p>
+                                        <h5 class="bg-dark text-light p-3 rounded-0">
+                                            <b> Screening Presets</b>
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <?if(payload.listing.ScreeningPresetID === 0){?>
+
+                                        <div id="screening_default_label" class="alert alert-danger alert-dismissible fade show" role="alert">
+                                            <label>Please apply a default Screening Preset to this
+                                                listing.</label>
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <?}?>
+                                    </div>
+                                    <div class="col-12 ">
+                                        <div class="limiter">
+                                            <div class="container-table100">
+                                                <div class="wrap-table100">
+                                                    <div class="table100">
+                                                        <div class="row mb-2">
+
+                                                            <div class="col-lg-6 col-12">
+                                                                <a href="#" class="btn btn-secondary btn-sm rounded-pill" data-toggle="modal" data-target="#exampleModalLong2" id="create_screening_preset_button">
+                                                                    <i class="fas fa-plus"></i> New
+                                                                    preset
+                                                                </a>
+                                                            </div>
+
+                                                            <div class="col-lg-6 col-12">
+                                                                <h4></h4>
+                                                            </div>
+                                                        </div>
+
+                                                        <div style="height: 260px; overflow:hidden; overflow-y:scroll;">
+                                                            <table>
+    
+                                                                <tbody>
+                                                                    <?for(let i = 0; i < payload.screening_presets.length; i++){ ?>
+                                                                        <?if(payload.screening_presets[i].presetdefault != "false"){?>
+                                                                            <tr>
+    
+                                                                                <td class="column1">
+                                                                                    <p><?=payload.screening_presets[i].name?>
+                                                                                    </p>
+                                                                                </td>
+                                                                                <td class="column2 text-lg-center text-md-center text-center">
+                                                                                    <p>
+                                                                                        <a href="#" data-toggle="modal" data-target="#exampleModalLong2" data-screening_preset="<?=JSON.stringify(payload.screening_presets[i]) ?>">
+                                                                                        Edit</a>
+                                                                                    </p>
+                                                                                </td>
+                                                                                <?if(payload.screening_presets[i].ID != payload.listing.ScreeningPresetID){?>
+                                                                                <td class="column3 text-lg-center text-md-center text-center">
+                                                                                    <p>
+                                                                                        <button class="btn btn-warning btn-sm mt-2"
+                                                                                            style="color: white; font-size: 1em;"
+                                                                                        id="<?=payload.screening_presets[i].name ?> <?=payload.screening_presets[i].ID?>"
+                                                                                        onclick="set_as_default('screening_preset', <?=payload.screening_presets[i].ID?>, '<?=payload.screening_presets[i].name?>', <?=payload.listing.ID?>)">
+                                                                                            Set as Default</button>
+                                                                                    </p>
+    
+                                                                                </td>
+    
+    
+                                                                                <?}else{?>
+                                                                                        <td class="column3 text-lg-center text-md-center text-center"></td>
+                                                                                <?}?>
+    
+                                                                                <td class="column4 text-lg-center text-md-center text-center">
+                                                                                    <p>
+                                                                                        <form action="/listings/delete_screening_preset" method="post">
+    
+                                                                                            <input type="hidden" name="screening_preset_id" value="<?=payload.screening_presets[i].ID?>">
+                                                                                            <input type="hidden" name="listing_id" value="<?=payload.listing.ID?>">
+                                                                                            <button
+                                                                                            type="submit"
+                                                                                            style="color: white; font-size: 1em;"
+                                                                                            class="btn btn-danger btn-sm">
+                                                                                            Delete </button>
+                                                                                        </form>
+                                                                                    </p>
+                                                                                </td>
+                                                                            </tr>
+                                                                        <?}?>
+                                                                    <?}?>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    </div>
+                    <footer class="pt-5">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <hr>
+                                    <p class="text-muted">Mrs.P &copy Copyright 2021</p>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+
+                    <!-- Rental Presets -->
+                    <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content rounded-0 border-0">
+                                <div class="modal-header pb-2 bg-dark rounded-0">
+                                    <h5 class="modal-title text-primary" id="exampleModalLongTitle">Create a Rental
+                                        Preset
+                                    </h5>
+                                    <button type="button" class="close text-light border-0" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body pb-0 px-0">
+                                    <div class="row">
+                                        <div class="container px-5">
+                                            <form id="rental_preset_form" class="form" action="/listings/create_rental_preset" method="post">
+                                                <div class="form-row mb-4">
+                                                    <div class="col">
+                                                        <small class="text-muted">Preset Name</small>
+                                                        <input required type="text" name="preset_name" id="preset_name" class="form-control" placeholder="Preset Name">
+                                                    </div>
+                                                </div>
+                                                <div class="form-row mb-4">
+                                                    <div class="col-md-4">
+                                                        <small class="text-muted">Monthly Rent</small>
+                                                        <input required type="number" name="monthly_rent" id="monthly_rent" step="0.01" class="form-control" placeholder="Monthly Rent">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <small class="text-muted">Security Deposit</small>
+                                                        <input required type="number" name="security_deposit" id="security_deposit" step="0.01" class="form-control" placeholder="Security Deposit">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <small class="text-muted">Due Date</small>
+                                                        <input required type="number" min="1" max="31" name="due_day" id="due_day" class="form-control" placeholder="Due Day">
+                                                    </div>
+                                                </div>
+                                                <div class="form-row mb-4">
+                                                  <div class="col-md-4">
+                                                    <small class="text-muted">Escalation Type</small>
+                                                    <select id="escalation_type" class="form-control" name="escalation_type">
+                                                      <option value="none">None</option>
+                                                      <option value="flat_fee">Flat Fee</option>
+                                                      <option value="percentage">Percentage</option>
+                                                    </select>
+                                                  </div>
+                                                  <div class="col-md-4">
+                                                    <small class="text-muted">Escalation Rate</small>
+                                                    <input required type="number" name="escalation_rate" id="escalation_rate" step="0.01" class="form-control" placeholder="Amount / %">
+                                                  </div>
+                                                  <div class="col-md-4">
+                                                    <small class="text-muted">Escalation Interval</small>
+                                                    <input required type="number" name="escalation_interval" id="escalation_interval" step="1" min="1" max="100" class="form-control" placeholder="# Months">
+                                                  </div>
+                                                </div>
+                                                <hr>
+                                                <div class="form-row mb-4">
+                                                    <div class="col">
+                                                        <h6>How should Pro-rated Rent be calculated ?*</h6>
+                                                        <div class="form-group">
+                                                            <label class="col-md-4 control-label" for="pro_rate_method"></label>
+                                                            <div class="col-md-4">
+                                                                <label class="radio-inline" for="pro_rate_method-0">
+                                                                    <input type="radio" name="pro_rate_method" id="pro_rate_method-0" value="m">
+                                                                    Monthly
+                                                                </label>
+                                                                <label class="radio-inline" for="pro_rate_method-1">
+                                                                    <input type="radio" name="pro_rate_method" id="pro_rate_method-1" value="y">
+                                                                    Yearly
+                                                                </label>
+                                                                <label class="radio-inline" for="pro_rate_method-2">
+                                                                    <input type="radio" name="pro_rate_method" id="pro_rate_method-2" value="h">
+                                                                    Highest
+                                                                </label>
+                                                                <label class="radio-inline" for="pro_rate_method-3">
+                                                                    <input type="radio" name="pro_rate_method" id="pro_rate_method-3" value="l">
+                                                                    Lowest
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <h6>Allow Partial Payments?</h6>
+
+                                                        <div class="form-group">
+                                                            <label class="col-md-4 control-label" for="allow_partial_rent"></label>
+                                                            <div class="col-md-4">
+                                                                <label class="radio-inline" for="allow_partial_rent-0">
+                                                                    <input type="radio" name="allow_partial_rent" id="allow_partial_rent-0" value="true">
+                                                                    yes
+                                                                </label>
+                                                                <label class="radio-inline" for="allow_partial_rent-1">
+                                                                    <input type="radio" name="allow_partial_rent" id="allow_partial_rent-1" value="false">
+                                                                    no
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="form-row mb-4">
+                                                    <div class="col">
+                                                        <h6>Allow Partial Miscellaneous Payments?</h6>
+                                                        <div class="form-group">
+                                                            <label class="col-md-4 control-label" for="allow_partial_misc"></label>
+                                                            <div class="col-md-4">
+                                                                <label class="radio-inline" for="allow_partial_misc-0">
+                                                                    <input type="radio" name="allow_partial_misc" id="allow_partial_misc-0" value="true">
+                                                                    yes
+                                                                </label>
+                                                                <label class="radio-inline" for="allow_partial_misc-1">
+                                                                    <input type="radio" name="allow_partial_misc" id="allow_partial_misc-1" value="false">
+                                                                    no
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <h6>Charge Late Fees?</h6>
+                                                        <div class="form-group">
+                                                            <label class="col-lg-4 control-label" for="charge_late_fee"></label>
+                                                            <div class="col-lg-4">
+                                                                <label class="radio-inline" for="charge_late_fee-0">
+                                                                    <input type="radio" name="charge_late_fee" id="charge_late_fee-0" value="true">
+                                                                    yes
+                                                                </label>
+                                                                <label class="radio-inline" for="charge_late_fee-1">
+                                                                    <input type="radio" name="charge_late_fee" id="charge_late_fee-1" value="false">
+                                                                    no
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="form-row mb-4">
+                                                    <div class="col-lg-4">
+                                                        <small class="text-muted">No. of days until rent is
+                                                            considered
+                                                            late</small>
+                                                        <input type="number" name="grace_period" id="grace_period" placeholder="Days" class="form-control">
+                                                    </div>
+                                                </div>
+                                                <div id="flat_fee_group" class="form-row">
+                                                    <div class="col-lg-2">
+                                                        <div class="form-group">
+                                                            <div class="form-check">
+
+                                                                <input type="checkbox" name="charge_flat" id="charge_flat" class="form-check-input">
+                                                                <label class="form-check-label" for="gridCheck">
+                                                                    Flat Fee
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-3">
+                                                        <small class="text-muted">Flat Late Fee</small>
+                                                        <input type="number" name="flat_late_fee" id="flat_late_fee" class="form-control" placeholder="P">
+                                                    </div>
+                                                </div>
+                                                <div id="charge_daily_group" class="form-row mt-3">
+                                                    <div class="col-lg-2">
+                                                        <div class="form-group">
+                                                            <div class="form-check">
+                                                                <input type="checkbox" name="charge_daily" id="charge_daily" class="form-check-input">
+                                                                <label class="form-check-label" for="gridCheck">
+                                                                    Per Day %
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="col-lg-3">
+                                                        <small class="text-muted">% of Monthly</small>
+                                                        <input type="number" id="daily_rate" name="daily_rate" class="form-control" placeholder="%">
+                                                    </div>
+                                                    <div class="col-lg-3">
+                                                        <small class="text-muted">Max. Cumulative Late Fees *</small>
+
+
+                                                        <input type="number" id="max_cumulative_late_fee" name="max_cumulative_late_fee" class="form-control" step="0.01" placeholder="P">
+                                                    </div>
+                                                </div>
+                                                <p id="toast_message"></p>
+                                                <hr class="my-4">
+                                                <h6 class="">
+                                                    Other fees to be charged monthly under this preset
+                                                </h6>
+                                                <div class="form-row">
+                                                    <div class="col-lg-8">
+                                                        <small class="text-muted">Fee Name</small>
+                                                        <input type="text" name="fee_name" id="fee_name" class="form-control" placeholder="Fee name">
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <small class="text-muted">Amount</small>
+                                                        <input type="number" name="fee_amount" step="0.01" id="fee_amount" class="form-control" placeholder="Amount">
+                                                    </div>
+                                                    <div class="col-lg-2 mt-2 mt-lg-0 mt-md-0 align-self-end">
+                                                        <button id="add_fee_button" type="button" class="btn btn-md btn-secondary">
+                                                            <i class="fas fa-plus"></i>
+                                                            Add
+                                                        </button>
+                                                    </div>
+                                                    <div id="other_fees_container" class="container">
+
+                                                    </div>
+                                                </div>
+                                                <div class="form-row mt-3">
+                                                    <small class="form-text text-muted mt-0">
+                                                        <i>*Monthly & Yearly yield different amounts for 31/30 day
+                                                            months</i>
+                                                    </small>
+
+                                                    <small class="form-text text-muted mt-0">
+                                                        <i>* The system will stop automatically billing the tenant when late fees have reached the Max. Cumulative fee limit. The tenant will be considered Delinquent and you will be notified.</i>
+                                                    </small>
+                                                </div>
+                                                <input type="hidden" name="listing_id" id="listing_id"  value="<?=payload.listing.ID?>">
+                                                <input type="hidden" name="rental_preset_id" id="rental_preset_id">
+                                                <input type="hidden" name="update_rental" id="update_rental">
+                                                <input type="hidden" name="other_monthly_fees" id="other_monthly_fees">
+
+                                        </div>
+
+                                        <div class="container">
+                                            <button type="button" class="btn btn-md btn-primary btn-block rounded-0" id="save_rental_preset_button">Save Preset</button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Screening presets-->
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModalLong2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content rounded-0 border-0">
+                                <div class="modal-header pb-2 bg-dark rounded-0">
+                                    <h5 class="modal-title text-primary" id="exampleModalLongTitle">Create a Screening
+                                        Preset</h5>
+                                    <button type="button" class="close text-light border-0" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body pb-0 px-0">
+
+                                    <div class="row">
+                                        <div class="container px-5">
+                                            <form id="screening_preset_form" class="form" action="/listings/create_screening_preset" method="post">
+
+                                                <div class="form-row mb-4">
+                                                    <div class="col">
+                                                        <small class="text-muted">Preset name</small>
+                                                        <input type="text" name="preset_name" class="form-control" placeholder="Preset Name" id="preset_name_modal">
+                                                    </div>
+                                                </div>
+                                                <h6 class="">
+                                                    Tenant screening questions
+                                                </h6>
+                                                <div class="form-row mb-4">
+                                                    <div class="col">
+                                                        <small class="text-muted">Question</small>
+                                                        <input class="form-control" type="text" name="Question" placeholder="Question" id="question">
+                                                    </div>
+                                                    <div class="col-lg-3">
+                                                        <small for="answer_data_type" class="text-muted">Answer
+                                                            Type</small>
+                                                        <select id="answer_data_type" class="form-control" name="answer_data_type">
+                                                            <option name="answer_data_type" value="text">Text</option>
+                                                            <option name="answer_data_type" value="number">Number
+                                                            </option>
+                                                            <option name="answer_data_type" value="date">Date</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-lg-2 align-self-end">
+
+                                                        <button id="add_question" type="button" name="add_question" class="btn btn-md btn-secondary rounded-pill">
+                                                            <i class="fas fa-plus"></i>
+                                                            Add</button>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <h6 class="">
+                                                    Required Documentation
+                                                </h6>
+                                                <div class="form-row mb-4">
+                                                    <div class="col-4">
+                                                        <small class="text-muted">Document Name</small>
+                                                        <input type="text" name="required_doc" id="required_doc" placeholder="Document name" class="form-control">
+                                                    </div>
+                                                    <div class="col-3 align-self-end">
+                                                        <button class="btn btn-secondary rounded" type="button" name="button" id="add_required_doc">
+                                                            <i class="fas fa-plus"></i>
+                                                            Add Document</button>
+                                                    </div>
+
+                                                </div>
+                                                <hr>
+                                                <h6 class="">
+                                                    Viewing slots
+                                                </h6>
+                                                <div class="form-row mb-4">
+                                                    <div class="col-3">
+                                                        <small class="text-muted">Day</small>
+                                                        <select id="viewing_day" class="form-control" name="viewing_day">
+                                                            <option name="viewing_day" value="Monday">Monday</option>
+                                                            <option name="viewing_day" value="Tuesday">Tuesday</option>
+                                                            <option name="viewing_day" value="Wednesday">Wednesday
+                                                            </option>
+                                                            <option name="viewing_day" value="Thursday">Thursday
+                                                            </option>
+                                                            <option name="viewing_day" value="Friday">Friday</option>
+                                                            <option name="viewing_day" value="Saturday">Saturday
+                                                            </option>
+                                                            <option name="viewing_day" value="Sunday">Sunday</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <small class="text-muted">From</small>
+                                                        <input type="time" class="form-control" name="from_time" id="from_time">
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <small class="text-muted">To</small>
+                                                        <input type="time" class="form-control" name="to_time" id="to_time">
+                                                    </div>
+                                                    <div class="col-3 align-self-end">
+                                                        <button type="button" class="btn btn-secondary rounded" name="button" id="add_viewing_slot"> <i class="fas fa-plus"></i> Add
+                                                            Slot</button>
+                                                    </div>
+                                                </div>
+                                                <hr class="my-2">
+
+                                                <div class="form-row">
+
+                                                    <div class="col-lg-4">
+                                                        <small class="text-muted">Screening Questions</small>
+                                                        <div id="question_list" class="d-flex flex-column">
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4">
+                                                        <small class="text-muted">Required Documentation</small>
+
+                                                        <div id="required_doc_list" class="d-flex flex-column">
+
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="col-lg-4">
+                                                        <small class="text-muted">Viewing Slots</small>
+
+                                                        <div id="viewing_slot_list" class="d-flex flex-column">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-row mt-3">
+                                                    <small class="form-text text-muted mt-0">
+                                                        <i>* Click on any preset to remove</i>
+                                                    </small>
+                                                </div>
+                                                <input id="screening_preset_id" type="hidden" name="screening_preset_id">
+                                                <input type="hidden" name="listing_id" value="<?=payload.listing.ID?> ">
+                                                <input id="update_screening" type="hidden" name="update">
+                                                <input id="required_docs_string" type="hidden" name="required_docs">
+                                                <input id="questions_string" type="hidden" name="questions">
+                                                <input id="viewing_slots_string" type="hidden" name="viewing_slots">
+                                            </form>
+                                        </div>
+                                        <div class="container">
+                                            <div class="form-text text-muted mt-0">
+                                                <p id="toast_message_s">
+                                                </p>
+                                            </div>
+
+                                            <button id="save_screening_preset_button" class="btn btn-md btn-primary btn-block rounded-0">Save Preset</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="add_tenant_modal" tabindex="-1" role="dialog" aria-labelledby="add_tenant_modal" aria-hidden="true">
+                        <div class="modal-dialog modal-md" role="document">
+                            <div class="modal-content rounded-0 border-0">
+                                <div class="modal-header pb-2 bg-dark rounded-0">
+                                    <h5 class="modal-title text-primary" id="exampleModalLongTitle">Create Active Tenant
+                                    </h5>
+                                    <button type="button" class="close text-light border-0" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body pb-0 px-0">
+                                    <div class="row">
+                                        <div class="container px-5">
+                                            <form class="form" action="/tenants/onboard_tenant" method="post">
+                                                <p class="mb-1">
+                                                    We will send the tenant an email & SMS with onboarding instructions. A unique <b>Rental Code</b> will be sent which will link them to this Listing.
+                                                </p>
+                                                <div class="form-row mb-4">
+                                                    <div class="col-6">
+                                                        <small class="text-primary">First Name</small>
+                                                        <input type="text" name="first_name" class="form-control" required>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <small class="text-primary">Last Name</small>
+                                                        <input type="text" name="last_name" class="form-control" required>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <small class="text-primary">Email Address</small>
+                                                        <input type="text" name="email_address" class="form-control" required>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <small class="text-primary">Phone Number</small>
+                                                        <input type="number" name="phone_number" class="form-control" required>
+                                                    </div>
+                                                </div>
+
+                                                <p class="mb-1">
+                                                    Specify when the lease started/starting & the length of the tenancy <b>in months</b>. The system will bill the tenant for the remainder of the lease
+                                                </p>
+
+                                                <div class="form-row mb-4">
+
+                                                    <div class="col-6">
+                                                        <small class="text-primary">Lease Start</small>
+                                                        <input class="form-control" type="date" name="date" required>
+                                                    </div>
+
+                                                    <div class="col-6">
+                                                        <small class="text-primary">Tenancy(months)</small>
+                                                        <input class="form-control" type="number" name="tenancy_period" required>
+                                                    </div>
+                                                </div>
+                                                <p class="mb-1">
+                                                    Select the Rental Preset to be applied to this Tenant. If you haven't created one already, a Copy of the Selected Preset will be created for your new Tenant which you can edit/adjust.
+                                                </p>
+                                                <div class="form-row mb-4">
+                                                    <div class="col-12">
+                                                        <small class="text-primary">Preset</small>
+                                                        <select class="form-control" required name="rental_preset_id" id="rental_preset">
+
+                                                            <?payload.rental_presets.forEach((preset) => {?>
+
+                                                            <option value="<?=preset.ID?>" name="rental_preset_id">
+                                                                <?=preset.name?></option>
+
+                                                            <?});?>
+                                                        </select>
+                                                    </div>
+
+                                                </div>
+
+                                                <input type="hidden" name="listing_id" value="<?=payload.listing.ID?>">
+                                                <input type="hidden" name="landlord_name" value="<?=payload.landlord_name?>">
+
+
+                                        </div>
+                                        <div class="container">
+                                            <button type="submit" class="btn btn-md btn-warning btn-block rounded-0">Create Active Tenant</button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="mi-modal">
+                      <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h4 class="modal-title"></h4>
+                          </div>
+                          <div class="modal-body">
+                              <p id="myModalLabel">
+                              </p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-primary btn-sm" id="modal-btn-no">OK</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="delete-modal">
+                      <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h4 class="modal-title"></h4>
+                          </div>
+                          <div class="modal-body">
+                              <p id="delete-label">
+                                Are you sure you want to delete this listing and its associated tenant information? This action cannot be reversed.
+                              </p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-primary btn-sm" id="modal-btn-delete">Delete</button>
+                            <button type="button" class="btn btn-primary btn-sm" id="modal-btn-cancel">Cancel</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.3.1.js"
+            integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+
+      <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+      <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+      <script type="text/javascript" src="https://cdn.datatables.net/r/dt/jq-2.1.4,jszip-2.5.0,pdfmake-0.1.18,dt-1.10.9,af-2.0.0,b-1.0.3,b-colvis-1.0.3,b-html5-1.0.3,b-print-1.0.3,se-1.0.1/datatables.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+              integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+              crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+                integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+                crossorigin="anonymous"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+        <script src="/javascripts/bundles/listing_form.js" charset="utf-8"></script>
+        <script src="/javascripts/bundles/date_fns_bundle.js" charset="utf-8"></script>
+
+
+
+        <script src="/javascripts/listing_view.js" charset="utf-8"></script>
+        <script>
+            $(document).ready(function () {
+
+            get_financial_data();
+            $('#income_report_table').DataTable({
+
+                    pageLength: 10,
+                    filter: true,
+                    deferRender: true,
+                    scrollY: 200,
+                    scrollCollapse: true,
+                    scroller: true,
+                    dom: 'lBfrtip',
+                    buttons: [{
+                              extend: 'excelHtml5',
+                              text: 'Export to Excel',
+                              title: 'Export Table Data',
+                              download: 'open',
+                              orientation:'landscape',
+                              exportOptions: {
+                                columns: ':visible'
+                              }
+                            }]
+              });
+
+            });
+        </script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<html class="no-js" lang="en">
+
+<head>
+    <title>Landlord | Applications</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://code.jquery.com/jquery-3.3.1.js"
+        integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/table.css">
+    <link rel="stylesheet" href="/css/breadcrumbs.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg flex-md-nowrap navbar-dark bg-custom-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <h2 class="m-0">Mrs.P</h2>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav mr-auto">
+                </ul>
+                <ul class="navbar-nav ml-lg-auto">
+                    <li class="nav-item d-flex">
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-user-alt"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            Sign out
+                            <i class="fas fa-sign-out-alt"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <div class="row justify-content-center mt-3">
+
+            <div class="col-md-8">
+                <form class=" rounded-0 px-5 py-3" method="post" action="/profile">
+                    <h3 class="m-0">
+                        Account
+                        <p><?=message?></p>
+                    </h3>
+                    <small class="text-secondary">Make changes to your profile then click save</small>
+                    <div class="form-content mt-3">
+
+
+                        <div class="form-row justify-content-between">
+                            <div class="form-group col-md-6">
+                                <small>First Name</small>
+                                <input type="text" class="form-control form-control-md rounded-0"
+                                    name="first_name"
+                                      value="<?=profile.first_name?>"
+                                     />
+                            </div>
+                            <div class="form-group col-md-6">
+                                <small>Last Name</small>
+                                <input type="text" class="form-control form-control-md rounded-0"
+                                    name="last_name" value="<?=profile.last_name?>"/>
+                            </div>
+                        </div>
+
+                        <div class="form-row justify-content-between">
+                            <div class="form-group col-md-6">
+                                <small>Country</small>
+                                <input type="text" class="form-control form-control-md rounded-0"
+                                    name="country"
+                                       value="<?=profile.country?>" />
+                            </div>
+                            <div class="form-group col-md-6">
+                                <small>Town</small>
+                                <input type="text" class="form-control form-control-md rounded-0"
+                                    name="town"   value="<?=profile.town?>"/>
+                            </div>
+                        </div>
+                        <div class="form-row justify-content-between">
+                            <div class="form-group col-md">
+                                <small>Street Address</small>
+                                <input type="text" class="form-control form-control-md rounded-0"
+                                    name="physical_address"
+                                       value="<?=profile.physical_address?>" />
+                            </div>
+
+                        </div>
+
+                        <h6 class="mt-3 text-secondary"><b>Company Information</b></h6>
+                        <div class="form-row justify-content-between">
+                            <div class="form-group col-md">
+                                <small>Registered Name</small>
+                                <input type="text" class="form-control form-control-md rounded-0"
+                                    name="company_name"   value="<?=profile.company_name?>"
+                                     />
+
+
+                            </div>
+                            <div class="form-group col-md-6">
+                                <small>Registration Number</small>
+                                <input type="text" class="form-control form-control-md rounded-0"
+                                     name="registration_number"   value="<?=profile.registration_number?>"/>
+                            </div>
+                        </div>
+
+                        <div class="form-row justify-content-start">
+                            <div class="form-group col-md-6">
+                                <small>Registered Address</small>
+                                <input type="text" class="form-control form-control-md rounded-0" id="question_1"
+                                     name="registered_address" value="<?=profile.registered_address?>" />
+                            </div>
+                            <div class="form-group col-md-6">
+                                <small>Company Phone Number</small>
+                                <input type="text" class="form-control form-control-md rounded-0" id="question_1"
+                                     name="company_phone_number" value="<?=profile.company_phone_number?>"/>
+                            </div>
+
+                        </div>
+                        <div class="form-row justify-content-start">
+                            <div class="form-group col-md-6">
+                                <small>Company Email Address</small>
+                                <input type="text" class="form-control form-control-md rounded-0" id="question_1"
+                                     name="company_email_address" value="<?=profile.company_email_address?>"/>
+                            </div>
+
+
+                        </div>
+
+                        <h6 class="mt-3 text-secondary"><b>Rent Collection Information</b></h6>
+
+                        <div class="form-row justify-content-start">
+                            <div class="form-group col-md-6">
+                                <small>Bank Name</small>
+                                <input type="text" class="form-control form-control-md rounded-0" id="question_1"
+                                     name="collection_bank_name" value="<?=profile.collection_bank_name?>"/>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <small>Account Name</small>
+                                <input type="text" class="form-control form-control-md rounded-0" id="question_1"
+                                     name="collection_account_name" value="<?=profile.collection_account_name?>"/>
+                            </div>
+
+                        </div>
+                        <div class="form-row justify-content-start">
+                            <div class="form-group col-md-6">
+                                <small> Account Number</small>
+                                <input type="text" class="form-control form-control-md rounded-0" id="question_1"
+                                     name="collection_account_number" value="<?=profile.collection_account_number?>"/>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <small> Branch Code</small>
+                                <input type="text" class="form-control form-control-md rounded-0" id="question_1"
+                                     name="collection_branch_code" value="<?=profile.collection_branch_code?>" />
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                    <div style="display:<?= profile.role === 'primary' ? 'block': 'none'?>">
+                      <h6 class="mt-3 text-secondary"><b>Primary Access</b></h6>
+                      <div class="form-row justify-content-between">
+                          <div class="form-group col-md">
+                              <small>Primary Email Address</small>
+                              <input type="text" class="form-control form-control-md rounded-0" value="<?=profile.email_address?>" name="email_address"
+                                   />
+                          </div>
+                      </div>
+
+                      <div class="form-row justify-content-between">
+                          <div class="form-group col-md-3">
+                              <small>Old Password</small>
+                              <input type="password" class="form-control form-control-md rounded-0" name="old_password"
+                                   />
+                          </div>
+                          <div class="form-group col-md-3">
+                              <small>New password</small>
+                              <input type="password" class="form-control form-control-md rounded-0" name="new_password"
+                                   />
+                          </div>
+
+                          <div class="form-group col-md-3">
+                              <small>Re-enter New password</small>
+                              <input type="password" class="form-control form-control-md rounded-0" name="confirm_password"
+                                   />
+                          </div>
+                      </div>
+                    </div>
+                    <div style="display:<?= profile.role === 'secondary' ? 'block': 'none'?>">
+                      <h6 class="mt-3 text-secondary"><b>Secondary Access</b></h6>
+                      <div class="form-row justify-content-between">
+                          <div class="form-group col-md">
+                              <small>Secondary Email Address</small>
+                              <input type="text" class="form-control form-control-md rounded-0" value="<?=profile.secondary_email_address?>" name="secondary_email_address"
+                                   />
+                          </div>
+                      </div>
+                      <div class="form-row justify-content-between">
+                          <div class="form-group col-md-3">
+                              <small>Old Secondary Password</small>
+                              <input type="password" class="form-control form-control-md rounded-0" name="old_secondary_password"
+                                   />
+                          </div>
+                          <div class="form-group col-md-3">
+                              <small>New Secondary password</small>
+                              <input type="password" class="form-control form-control-md rounded-0" name="new_secondary_password"
+                                   />
+                          </div>
+
+                          <div class="form-group col-md-3">
+                              <small>Re-enter New Secondary password</small>
+                              <input type="password" class="form-control form-control-md rounded-0" name="confirm_secondary_password"
+                                   />
+                          </div>
+                      </div>
+                    </div>
+                    <div style="display:<?= profile.role === 'accounting' ? 'block': 'none'?>">
+                      <h6 class="mt-3 text-secondary"><b>Accounting Access</b></h6>
+                      <div class="form-row justify-content-between">
+                          <div class="form-group col-md">
+                              <small>Accounting Email Address</small>
+                              <input type="text" class="form-control form-control-md rounded-0" value="<?=profile.accounting_email_address?>" name="accounting_email_address"
+                                   />
+                          </div>
+                      </div>
+                      <div class="form-row justify-content-between">
+                        <div class="form-row justify-content-between">
+                            <div class="form-group col-md-3">
+                                <small>Old Accounting Password</small>
+                                <input type="password" class="form-control form-control-md rounded-0"  name="old_accounting_password"
+                                     />
+                            </div>
+                            <div class="form-group col-md-3">
+                                <small>New Accounting password</small>
+                                <input type="password" class="form-control form-control-md rounded-0" name="new_accounting_password"
+                                     />
+                            </div>
+
+                            <div class="form-group col-md-3">
+                                <small>Re-enter New Accounting password</small>
+                                <input type="password" class="form-control form-control-md rounded-0" name="confirm_accounting_password"
+                                     />
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <div style="display:<?= profile.role === 'maintenance' ? 'block': 'none'?>">
+
+                      <h6 class="mt-3 text-secondary"><b>Maintenance Access</b></h6>
+
+                      <div class="form-row justify-content-between">
+                          <div class="form-group col-md">
+                              <small>Maintenance Email Address</small>
+                              <input type="text" class="form-control form-control-md rounded-0" value="<?=profile.maintenance_email_address?>" name="maintenance_email_address"
+                                   />
+                          </div>
+                      </div>
+                      <div class="form-row justify-content-between">
+                          <div class="form-group col-md-3">
+                              <small>Old Maintenance Password</small>
+                              <input type="password" class="form-control form-control-md rounded-0" name="old_maintenance_password"
+                                   />
+                          </div>
+                          <div class="form-group col-md-3">
+                              <small>New Maintenance Password</small>
+                              <input type="password" class="form-control form-control-md rounded-0" name="new_maintenance_password"
+                                   />
+                          </div>
+
+                          <div class="form-group col-md-3">
+                              <small>Re-enter New Maintenance password</small>
+                              <input type="password" class="form-control form-control-md rounded-0" name="confirm_maintenance_password"
+                                   />
+                          </div>
+                      </div>
+                    </div>
+                    <div style="display:<?= profile.role === 'management' ? 'block': 'none'?>">
+
+                      <h6 class="mt-3 text-secondary"><b>Management Access</b></h6>
+
+                      <div class="form-row justify-content-between">
+                          <div class="form-group col-md">
+                              <small>Management Email Address</small>
+                              <input type="text" class="form-control form-control-md rounded-0" value="<?=profile.management_email_address?>" name="management_email_address"
+                                   />
+                          </div>
+                      </div>
+                      <div class="form-row justify-content-between">
+                          <div class="form-group col-md-3">
+                              <small>Old Management Password</small>
+                              <input type="password" class="form-control form-control-md rounded-0" name="old_management_password"
+                                   />
+                          </div>
+                          <div class="form-group col-md-3">
+                              <small>New Management Password</small>
+                              <input type="password" class="form-control form-control-md rounded-0" name="new_management_password"
+                                   />
+                          </div>
+
+                          <div class="form-group col-md-3">
+                              <small>Re-enter New Management password</small>
+                              <input type="password" class="form-control form-control-md rounded-0" name="confirm_management_password"
+                                   />
+                          </div>
+                      </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-secondary btn-lg rounded-0 my-3 shadow">
+                        <small>
+                            <i class="fas fa-check"></i>
+                            SAVE CHANGES
+                        </small>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

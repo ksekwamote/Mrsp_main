@@ -1,0 +1,252 @@
+drop database if exists mrsp_africa;
+create database mrsp_africa;
+use mrsp_africa;
+
+drop table if exists ProductKey;
+create table ProductKey(
+hash mediumtext,
+activated varchar(255)
+);
+
+/*unhashed: AMOlk-dnfln-SLKDJ-F5548*/
+insert into ProductKey(hash, activated) values('ja4csPOq6qE+jijPNPrKjkk0L1lMO0R0Hw3XzgC/ARA=', 'false');
+
+
+
+
+drop table if exists LandLord;
+create table LandLord (
+ID integer auto_increment not null primary key,
+first_name varchar(255),
+last_name varchar(255),
+country varchar(255),
+town varchar(255),
+physical_address varchar(225),
+company_name varchar(255),
+registration_number varchar(255),
+registered_address varchar(255),
+company_email_address varchar(255),
+company_phone_number varchar(255),
+collection_bank_name varchar(255),
+collection_account_name varchar(255),
+collection_account_number varchar(255),
+collection_branch_code varchar(255),
+email_address varchar(255),
+password mediumtext,
+accounting_email_address varchar(255),
+accounting_password mediumtext,
+
+maintenance_email_address varchar(255),
+maintenance_password mediumtext
+
+
+maintenance_email_address varchar(255),
+maintenance_password mediumtext,
+management_email_address varchar(255),
+management_password mediumtext,
+
+secondary_email_address varchar(255),
+secondary_password varchar(255)
+);
+drop table if exists Tenant;
+create table Tenant(
+ID integer auto_increment not null primary key,
+first_name varchar(255),
+last_name varchar(255),
+email_address varchar(255),
+phone_number varchar(255),
+profile_picture mediumtext,
+password mediumtext
+);
+
+drop table if exists Listing;
+create table Listing(
+ID integer auto_increment not null primary key,
+LandLordID integer not null,
+RentalPresetID integer,
+ScreeningPresetID integer,
+type varchar(255),
+street_address varchar(255),
+city varchar(255),
+num_bedrooms integer,
+num_bathrooms integer,
+description mediumtext,
+units_available integer,
+pictures mediumtext,
+visible varchar(5) default 'true',
+date_created varchar(20),
+potential_credit_loss double
+);
+
+
+drop table if exists Screening;
+create table Screening(
+ID integer auto_increment not null primary key,
+ScreeningPresetID integer not null,
+RentalApplicationID integer not null,
+question_answers mediumtext,
+required_documents mediumtext,
+viewing_slot mediumtext
+);
+
+drop table if exists ScreeningPreset;
+create table ScreeningPreset(
+ID integer auto_increment not null primary key,
+LandLordID integer not null,
+name varchar(255),
+questions mediumtext,
+required_documents mediumtext,
+viewing_slots mediumtext
+);
+
+
+
+drop table if exists RentalPreset;
+create table RentalPreset(
+ID integer auto_increment not null primary key,
+LandLordID integer not null,
+name varchar(255),
+monthly_rent double,
+security_deposit double,
+due_day integer,
+pro_rate_method varchar(1),
+allow_partial_rent varchar(5),
+allow_partial_misc varchar(5),
+charge_late_fee varchar(5),
+grace_period integer,
+charge_flat varchar(5),
+charge_daily varchar(5),
+flat_late_fee double,
+daily_rate double,
+max_cumulative_late_fee double,
+other_monthly_fees mediumtext,
+escalation_type varchar(10), /* '%', 'flat' */
+escalation_rate double,
+escalation_interval integer
+);
+
+
+drop table if exists RentalApplication;
+create table RentalApplication(
+ID integer auto_increment not null primary key,
+ListingID integer not null,
+TenantID integer not null,
+fullname varchar(255),
+email_address varchar(255),
+phone_number varchar(255),
+security_deposit double,
+monthly_rent double,
+occupants mediumtext,
+lease_term integer,
+tentative_move_in varchar(255),
+status integer default 0,/* 0-pending review, 1-approved, 2-closed*/
+date varchar(255)
+);
+
+drop table if exists ActiveTenant;
+create table ActiveTenant(
+ID integer auto_increment not null primary key,
+TenantID integer not null,
+ListingID integer not null,
+RentalPresetID integer not null,
+move_in_date varchar(20),
+tenancy_period integer not null,
+rental_code varchar(50),
+lapse_date varchar(20),
+status varchar(20) /*['active', 'terminated', 'lapsed']*/
+);
+
+drop table if exists PendingTenant;
+create table PendingTenant(
+ID integer auto_increment not null primary key,
+ActiveTenantID integer not null,
+email_address varchar(255),
+phone_number varchar(255),
+first_name varchar(255),
+last_name varchar(255)
+);
+drop table if exists ServiceRequest;
+create table ServiceRequest(
+ID integer auto_increment not null primary key,
+ActiveTenantID integer not null,
+title varchar(255),
+urgency integer,
+date_available varchar(255),
+authorized_rep_name varchar(255),
+authorized_rep_number integer,
+description mediumtext,
+assigned_respondent varchar(255),
+respondent_contact varchar(255),
+supply_cost double,
+labour_cost double,
+vat double,
+total_cost double,
+status varchar(50),/*['pending','assigned','resolved']*/
+date_reported varchar(255),
+date_assigned varchar(255),
+date_resolved varchar(255)
+);
+
+drop table if exists Noticeboard;
+
+create table Noticeboard(
+ID integer auto_increment not null primary key,
+ActiveTenantID integer not null,
+message mediumtext,
+seen varchar(255)
+);
+
+drop table if exists ScheduledEscalation;
+create table ScheduledEscalation(
+ID integer auto_increment not null primary key,
+ActiveTenantID integer not null,
+RentalPresetID integer not null,
+effective_date varchar(255),
+base_rent double,
+escalated_rent double,
+effected varchar(20)
+);
+
+
+drop table if exists Payment;
+create table Payment(
+ID integer auto_increment not null primary key,
+ActiveTenantID integer not null,
+TransactionID integer,
+InvoiceID integer,
+description varchar(255),
+status varchar(255),
+amount varchar(255),
+due_date varchar(255)
+);
+
+drop table if exists Transaction;
+create table Transaction(
+ID integer auto_increment not null primary key,
+ActiveTenantID integer not null,
+reference varchar(255),
+total double,
+file mediumtext,
+status varchar(255),/*['pending', 'confirmed', 'declined']*/
+upload_date varchar(255),
+confirmation_date varchar(255)
+);
+
+
+drop table if exists Invoice;
+create table Invoice(
+ID integer auto_increment not null primary key,
+date varchar(255),
+file varchar(255)
+);
+
+
+drop table if exists Expense;
+create table Expense(
+ID integer auto_increment not null primary key,
+ListingID integer not null,
+description varchar(255),
+amount double,
+type varchar(255),/*recurring, once-off, service*/
+date_recorded varchar(255)
+);
