@@ -130,7 +130,8 @@ module.exports.generate_upload_signature = (req, res, next) => {
 
 module.exports.view_listing = (req, res, next) => {
   get_listing({ listing_id: req.query.id })
-    .then((result) => res.render("listing_view.ejs", { payload: result }))
+    .then((result) => {res.render("listing_view.ejs", { payload: result })
+  })
     .catch((error) => res.render("error", { message: error.message }));
 };
 

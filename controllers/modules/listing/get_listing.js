@@ -11,6 +11,7 @@ module.exports = (params) => {
         })
         .then((rental_presets) => {
             payload['rental_presets'] = rental_presets;
+            console.log(rental_presets)
             return promise_query('select * from ScreeningPreset where LandLordID = ?', [payload.listing.LandLordID]);
         })
         .then((screening_presets) => {

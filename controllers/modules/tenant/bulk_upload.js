@@ -6,8 +6,9 @@ const datefns_tz = require("date-fns-tz");
 const datefns = require("date-fns");
 const { url } = require("inspector");
 const create_listing = require("../listing/create_listing");
-const onboard_tenant = require("./onboard_tenant");
-const { error } = require("console");
+const onboard_tenant_bulk = require("./onboard_tenant_bulk");
+
+
 
 // this method will read data from the excel that has been fomratted into JSON
 // then use helper functions to create a new propert and add a tenant from the
@@ -33,7 +34,28 @@ module.exports = (data, landlordId) => {
         tenancy_period: data[i].tenancy_period,
         date: onboardDate,
         landlord_name: data[i].landlord_name,
+        name:data[i].name,
+        monthly_rent:data[i].monthly_rent,
+        security_deposit:data[i].security_deposit ,
+        due_day:data[i].due_day	,
+        pro_rate_method:data[i].pro_rate_method ,
+        allow_partial_rent:data[i].allow_partial_rent.toString(),
+        allow_partial_misc:data[i].allow_partial_misc.toString(),
+        charge_late_fee:data[i].charge_late_fee.toString(),
+        grace_period:data[i].grace_period,
+        charge_flat:data[i].charge_flat.toString(),
+        charge_daily:data[i].charge_daily.toString(),
+        flat_late_fee:data[i].flat_late_fee,
+        daily_rate:data[i].daily_rate,
+        max_cumulative_late_fee:data[i].max_cumulative_late_fee,
+        other_monthly_fees:data[i].other_monthly_fees,
+        escalation_type:data[i].escalation_type,
+        escalation_rate:data[i].escalation_rate,
+        escalation_interval:data[i].escalation_interval,
+        presetdefault:data[i].presetdefault
       };
+
+      
 
       create_listing({
         LandLordID: landlordId,
@@ -62,7 +84,7 @@ module.exports = (data, landlordId) => {
         .then((result) => {
           let resultId = result.url.slice(26);
           tenantInformation.listing_id = resultId;
-          onboard_tenant(tenantInformation);
+          onboard_tenant_bulk(tenantInformation);
         })
         .then(() => {
           console.log(`user ${i} uploaded`);

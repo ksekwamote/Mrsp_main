@@ -32,9 +32,10 @@ module.exports.bulk_upload = (req, res, next) => {
       // data[i].password = password;
     });
   }
+  console.log(data)
   bulk_upload_tenants(data, req.session.passport.user).then(
     console.log("Data uploaded")
-  );
+  ).catch(err => console.log("An error has occured: "+err))
   res.redirect("/listings");
 };
 

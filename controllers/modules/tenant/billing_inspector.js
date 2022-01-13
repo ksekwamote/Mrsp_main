@@ -5,24 +5,16 @@ const datefns_tz = require("date-fns-tz");
 const datefns = require("date-fns");
 const numeral = require("numeral");
 const HummusRecipe = require("hummus-recipe");
-const cloudinary = require("cloudinary");
+const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
+const { rejects } = require("assert");
 var today;
 var today_arr;
 var _today;
 var outgoing_mail = [];
 var processing_window = 5;
-var nodemailer = require("nodemailer");
-
-var mailer = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.MAILER_ADDRESS,
-    pass: process.env.MAILER_PASSWORD,
-  },
-});
+var invoiceFile;
+//var invoice = require("../../../invoice_1642065546436.pdf")
 
 //configuaration details for cloud storage.
 
@@ -203,7 +195,6 @@ module.exports = async (params) => {
             "Your latest invoice has been prepared for you. Here is a secured link to your copy:\n" +
               invoice
           );
-
           console.log("tenant billed");
         } else {
           console.log("tenant already billed for this month");
@@ -231,6 +222,7 @@ module.exports = async (params) => {
 //function gets the date that the tenant has to be billed on.
 function get_billing_date(tenant) {
   console.log("-----> get billing date");
+  var due = 34
   var due_day = pad(tenant.rental_preset.due_day);
   var str = today_arr[0] + "-" + today_arr[1] + "-" + due_day;
   var this_month = validate(str);
@@ -393,7 +385,121 @@ async function bill_tenant(tenant, billing_date) {
 }
 
 //method for directly sending an invoice as part of an email in html format
+
+const createInvoice=(tenant, payments, total, billing_date, invoice_id) => {
+
+  return new Promise((resolve, reject) => {
+
+    const file_name = `invoice_${Date.now().toString()}.pdf`;
+    const file_path = process.env.BASE_PATH + file_name;
+    const invoice = new HummusRecipe("new", file_path);
+    var left_center = { align: "left center", fontSize: 11, color: "#000000" };
+    var center = { align: "center center", fontSize: 11, color: "#000000" };
+  
+    invoice.createPage("a4");
+    invoice.image("./invoice_template/invoice.pdf", 0, 0);
+  
+    invoice.text(
+      tenant.first_name + " " + tenant.last_name,
+      23.322,
+      129.478,
+      left_center
+    );
+  
+    invoice.text(
+      tenant.ID + tenant.first_name.substring(0, 3).toUpperCase(),
+      79.484,
+      228.478,
+      center
+    );
+    invoice.text(billing_date, 184.151, 228.479, center);
+    invoice.text("INV" + invoice_id, 517.484, 228.479, center);
+  
+    var y = 272.812;
+    for (var i = 0; i < payments.length; i++) {
+      invoice.text(i + 1, 22.322, y, left_center); //itemcode
+      invoice.text(payments[i][2], 100.988, y, left_center); //desc
+      invoice.text("P 0.00", 227.988, y, left_center);
+      invoice.text("P 0.00", 279.988, y, left_center);
+      invoice.text("1", 317.321, y, left_center);
+      invoice.text("P " + payments[i][4], 390.655, y, left_center); //price
+      invoice.text("P " + payments[i][4], 527.655, y, left_center); //line total
+      y = y + 13;
+    }
+  
+    invoice.text("P " + total, 528.322, 460.978, left_center);
+  
+    invoice.text("P 0.00", 528.322, 475.978, left_center);
+    invoice.text("P " + total, 528.322, 489.311, left_center);
+  
+    invoice.text("P 0.00", 528.322, 502.645, left_center);
+  
+    invoice.text("P " + total, 528.322, 527.312, left_center);
+  
+    invoice.endPage();
+    invoice.endPDF();
+  
+    console.log("===== After endPDF");
+
+    resolve({file_path , file_name})
+
+  })
+}
+
+  
+
+function uploadToCloudinary(file_path ,file_name){
+
+ return new Promise((resolve, reject) => {
+
+  var  opts = {
+    overwrite: true,
+    invalidate: true,
+    public_id: 'online',
+    resource_type: "auto"
+  };
+  
+  cloudinary.uploader.upload(file_path, opts ,function (error, result) {
+    if(result && result.secure_url){
+     console.log("URL "+result.secure_url)
+     invoiceFile = result.secure_url 
+     return resolve(result.secure_url);
+    }else{
+      console.log(error);
+      return reject({message: error.message});
+    }
+ });
+  })
+}
+
+
+//EMAIL
 const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
+ 
+ createInvoice(tenant , payments , total ,billing_date , invoice_id)
+ .then(res => {
+      uploadToCloudinary(res.file_path , res.file_name).then(res=> console.log("This link "+res))
+  })
+ .then(res => console.log('Suppose to be the link: '+res))
+ .then(res =>{
+
+  var [result, error] = handle(
+    messenger.mail({
+      from: "sycamon.bw@gmail.com",
+      to: `${tenant.email_address}`,
+      subject: "Sycamon [Accounts] ",
+      html: html_invoice,
+    })
+  );
+
+  if (error) {
+    console.log(error);
+    throw Error("error sending invoice ");
+  }
+
+ })
+ .catch(err => console.log("Error: "+err))
+ 
   const html_invoice = `
   <div>
   <div style="text-align: center; font-weight: bold; font-size: 2rem">
@@ -536,19 +642,11 @@ const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
 
 `;
 
-  var [result, error] = handle(
-    messenger.mail({
-      from: "sycamon.bw@gmail.com",
-      to: `${tenant.email_address}`,
-      subject: "Sycamon [Accounts] ",
-      html: html_invoice,
-    })
-  );
-  if (error) {
-    console.log(error);
-    throw Error("error sending invoice ");
-  }
+  
+  
 };
+
+
 
 async function print_invoice(
   tenant,
@@ -736,140 +834,8 @@ async function print_invoice(
       </div>
     </body>
 `;
-    queue_notif(tenant.email_address, html_invoice);
+    //queue_notif(tenant.email_address, html_invoice);
 
-    /////////////////////////////////////////Email template
-    // mail.sendMail(
-    //   {
-    //     from: "thitoithelpdesk@gmail.com",
-    //     to: res[0].email_address,
-    //     subject: `Loan ${applicationID} (${customer[0].first_name}  ${customer[0].last_name}) : Loan Application Notification Service`,
-    //     html: `
-    //       <body style="padding: 50px">
-    //       <div style="text-align: center; font-weight: bold; font-size: 2rem">
-    //         Tax Invoice
-    //       </div>
-    //       <div style="display: flex; justify-content: space-between">
-    //         <ul style="list-style: none">
-    //           <li><span style="font-weight: bold">Sycamon</span></li>
-    //           <li>P O Box 404515</li>
-    //           <li>Gaborone</li>
-    //           <br />
-    //           <li><span style="font-weight: bold">To:</span></li>
-    //           <li>Customer Name</li>
-    //         </ul>
-
-    //         <ul style="list-style: none; width: 40%">
-    //           <li style="display: flex; justify-content: space-between">
-    //             Tax Registration <span style="font-weight: bold">C11315201111</span>
-    //           </li>
-    //           <li style="display: flex; justify-content: space-between">
-    //             Telphone <span style="font-weight: bold">00267-3999800</span>
-    //           </li>
-    //           <li style="display: flex; justify-content: space-between">
-    //             Fax <span style="font-weight: bold">00267-3902025</span>
-    //           </li>
-    //         </ul>
-    //       </div>
-
-    //       <div style="display: flex; justify-content: space-around">
-    //         <div style="width: 19%; text-align: center">
-    //           Account
-    //           <div style="border: 2px solid black; border-radius: 5px">20REN</div>
-    //         </div>
-    //         <div style="width: 19%; text-align: center">
-    //           Date
-    //           <div style="border: 2px solid black; border-radius: 5px">${billing_date}</div>
-    //         </div>
-    //         <div style="width: 19%; text-align: center">
-    //           Order No
-    //           <div style="border: 2px solid black; border-radius: 5px">&nbsp;</div>
-    //         </div>
-    //         <div style="width: 19%; text-align: center">
-    //           Delivery Note
-    //           <div style="border: 2px solid black; border-radius: 5px">&nbsp;</div>
-    //         </div>
-    //         <div style="width: 19%; text-align: center">
-    //           Our Reference
-    //           <div style="border: 2px solid black; border-radius: 5px">
-    //             INV${invoice_id}
-    //           </div>
-    //         </div>
-    //       </div>
-
-    //       <div style="display: flex; justify-content: center; margin-top: 30px">
-    //         <table style="width: 100%; border-spacing: 8px 0">
-    //           <tr>
-    //             <th style="border-bottom: 2px solid black">Item Code</th>
-    //             <th style="border-bottom: 2px solid black">Item Description</th>
-    //             <th style="border-bottom: 2px solid black">Ordered</th>
-    //             <th style="border-bottom: 2px solid black">Prev Quality</th>
-    //             <th style="border-bottom: 2px solid black">Unit</th>
-    //             <th style="border-bottom: 2px solid black">Price (ln)</th>
-    //             <th style="border-bottom: 2px solid black">Disc %</th>
-    //             <th style="border-bottom: 2px solid black">Tax</th>
-    //             <th style="border-bottom: 2px solid black">Total</th>
-    //           </tr>
-
-    //           ${payments.map((element, index) => {
-    //             return ` <tr>
-    //               <td style="text-align: left">${index + 1}</td>
-    //               <td style="text-align: left">${element[2]}</td>
-    //               <td style="text-align: left">P 0.00</td>
-    //               <td style="text-align: left">P 0.00</td>
-    //               <td style="text-align: left">1</td>
-    //               <td style="text-align: left">P ${element[4]}</td>
-    //               <td style="text-align: left"></td>
-    //               <td style="text-align: left"></td>
-    //               <td style="text-align: left">P ${element[4]}</td>
-    //             </tr>`;
-    //           })}
-    //         </table>
-    //       </div>
-
-    //       <div style="display: flex; justify-content: space-between">
-    //         <ul style="list-style: none; width: 40%">
-    //           <li style="display: flex; justify-content: space-between">
-    //             Recieved by<span style="font-weight: bold"
-    //               >________________________</span
-    //             >
-    //           </li>
-    //           <li style="display: flex; justify-content: space-between">
-    //             Date<span style="font-weight: bold">________________________</span>
-    //           </li>
-    //           <li style="display: flex; justify-content: space-between">
-    //             Signed <span style="font-weight: bold">________________________</span>
-    //           </li>
-    //         </ul>
-
-    //         <ul style="list-style: none; width: 35%">
-    //           <li style="display: flex; justify-content: space-between">
-    //             Total (Excl) <span> P ${total}</span>
-    //           </li>
-    //           <li style="display: flex; justify-content: space-between">
-    //             Tax <span>P 0.00</span>
-    //           </li>
-    //           <li style="display: flex; justify-content: space-between">
-    //             <span style="font-weight: bold">Total </span> P ${total}
-    //           </li>
-    //           <li style="display: flex; justify-content: space-between">
-    //             Discount <span>P 0 .00</span>
-    //           </li>
-
-    //           <hr />
-
-    //           <li style="display: flex; justify-content: space-between">
-    //             <span style="font-weight: bold">Total (Incl)</span> P ${total}
-    //           </li>
-    //         </ul>
-    //       </div>
-    //     </body>
-    //   `,
-    //   },
-    //   function (error, info) {
-    //     if (error) throw error;
-    //   }
-    // );
 
     console.log(
       "path =================================================>",
@@ -878,16 +844,17 @@ async function print_invoice(
 
     var [upload_url, error] = await handle(
       new Promise((resolve, reject) => {
-        cloudinary.v2.uploader.upload(
+        cloudinary.uploader.upload(
           file_path,
           {
             overwrite: true,
             invalidate: true,
-            public_id: file_name.split(".")[0],
+            public_id: "online",
             // public_id: "/online/",
           },
           function (error, result) {
             if (result && result.secure_url) {
+              console.log(result.secure_url)
               return resolve(result.secure_url);
             } else {
               return reject({ message: error.toString() });
@@ -897,7 +864,7 @@ async function print_invoice(
       })
     );
 
-    fs.unlink(file_path, (err) => console.log("invoice deleted"));
+    //fs.unlink(file_path, (err) => console.log("invoice deleted"));
 
     // fake_url = `www.invoice.com`;
     var [update, error] = await handle(

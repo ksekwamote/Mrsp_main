@@ -951,10 +951,11 @@
                                                             </div>
 
                                                             <div style="height: 260px; overflow:hidden; overflow-y:scroll;">
-
                                                                 <table  >
                                                                     <tbody>
-                                                                        <?for(let i = 0; i < payload.rental_presets.length; i++){ ?>
+                                                                        
+                                                                        <?for(let i = payload.rental_presets.length-1; i >=0 ; i--){ ?>
+                                                                            
                                                                         <?if(payload.rental_presets[i].presetdefault != "false"){?>
                                                                         <tr>
                                                                             <td class="column1">
@@ -975,6 +976,8 @@
                                                                                           class="btn btn-sm btn-warning mt-3" onclick="set_as_default('rental_preset', <?=payload.rental_presets[i].ID?>,'<?=payload.rental_presets[i].name?>', <?=payload.listing.ID?>)">Set
                                                                                         as Default</button>
                                                                                 </p>
+
+                                                                               
     
                                                                             </td>
                                                                             <?}else{?>
