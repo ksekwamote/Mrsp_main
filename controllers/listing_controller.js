@@ -14,12 +14,12 @@ const get_rental_analysis = require("./modules/listing/get_rental_analysis");
 const update_potential_credit_loss = require("./modules/listing/update_potential_credit_loss");
 const manage_expenses = require("./modules/listing/manage_expenses");
 const expenses = require("./modules/listing/expenses");
-const billing_inspector = require("./modules/tenant/billing_inspector");
+// const billing_inspector = require("./modules/tenant/billing_inspector");
 
 module.exports.load = (req, res, next) => {
-  billing_inspector()
-    .then((result) => console.log(result))
-    .catch((error) => console.log(error));
+  // billing_inspector()
+  //   .then((result) => console.log(result))
+  //   .catch((error) => console.log(error));
 
   get_listings({ landlord_id: req.session.passport.user })
     .then((result) => res.render("listings.ejs", { payload: result }))
@@ -130,8 +130,9 @@ module.exports.generate_upload_signature = (req, res, next) => {
 
 module.exports.view_listing = (req, res, next) => {
   get_listing({ listing_id: req.query.id })
-    .then((result) => {res.render("listing_view.ejs", { payload: result })
-  })
+    .then((result) => {
+      res.render("listing_view.ejs", { payload: result });
+    })
     .catch((error) => res.render("error", { message: error.message }));
 };
 
