@@ -51,6 +51,7 @@ router.post("/confirm_pop", tenant_controller.confirm_pop);
 router.get("/tenant_bills", tenant_controller.get_bills);
 
 router.get("/transactions", tenant_controller.transactions);
+router.post("/changeInvoiceDate" ,tenant_controller.changeInvoiceDate)
 router.post("/assign_respondent", tenant_controller.assign_respondent);
 
 router.post("/uploadfile", upload.single("uploadfile"), (req, res) => {

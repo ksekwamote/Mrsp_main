@@ -4,7 +4,7 @@ var router = express.Router();
 var passport = require('passport');
 var connect = require('connect-ensure-login');
 var check_key = require('../controllers/modules/utils/check_key');
-
+const { getInvoiceDate } = require('../controllers/modules/tenant/changeInvoiceDate');
 
 /* GET home page. */
 router.get('/',check_key, (req, res, next) =>  {
@@ -27,5 +27,8 @@ router.get('/profile', connect.ensureLoggedIn('/'), account_controller.get_profi
 router.post('/profile', connect.ensureLoggedIn('/'), account_controller.update_profile);
 
 router.get('/logout', (req, res, next) => req.session.destroy((err) => res.redirect('/')));
+router.get('/billing' , (req,res,next) => {
+    getInvoiceDate().then(result => res.send(result)).catch(err => res.status(200).send(err))
+})
 
 module.exports = router;

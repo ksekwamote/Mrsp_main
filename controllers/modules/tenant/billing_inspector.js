@@ -386,7 +386,7 @@ async function bill_tenant(tenant, billing_date) {
 
 //method for directly sending an invoice as part of an email in html format
 
-const createInvoice=(tenant, payments, total, billing_date, invoice_id) => {
+const createInvoice=(tenant, payments, total, billing_dates, invoice_id) => {
 
   return new Promise((resolve, reject) => {
 
@@ -395,9 +395,19 @@ const createInvoice=(tenant, payments, total, billing_date, invoice_id) => {
     const invoice = new HummusRecipe("new", file_path);
     var left_center = { align: "left center", fontSize: 11, color: "#000000" };
     var center = { align: "center center", fontSize: 11, color: "#000000" };
+
+    const d  = new Date()
+    const month = d.getMonth()+2 % 12
+    const year  = d.getFullYear()
+    const billing_date = "01"+"/"+month+"/"+year
+
+
+
+    var arrears = findArears(payments)
   
     invoice.createPage("a4");
-    invoice.image("./invoice_template/invoice.pdf", 0, 0);
+    invoice.image("./invoice_template/invoice2.pdf", 0, 0);
+
   
     invoice.text(
       tenant.first_name + " " + tenant.last_name,
@@ -417,6 +427,7 @@ const createInvoice=(tenant, payments, total, billing_date, invoice_id) => {
   
     var y = 272.812;
     for (var i = 0; i < payments.length; i++) {
+      if(payments[i][2]=='Arrears' ) continue
       invoice.text(i + 1, 22.322, y, left_center); //itemcode
       invoice.text(payments[i][2], 100.988, y, left_center); //desc
       invoice.text("P 0.00", 227.988, y, left_center);
@@ -427,14 +438,18 @@ const createInvoice=(tenant, payments, total, billing_date, invoice_id) => {
       y = y + 13;
     }
   
-    invoice.text("P " + total, 528.322, 460.978, left_center);
+    if(arrears){
+      invoice.text("P " + total, 528.322, 455.978, left_center);
+    }
+    else{
+      invoice.text("P0.00", 528.322, 455.978, left_center);
+    }
+    invoice.text("P 0.00", 528.322, 470.978, left_center);
+    invoice.text("P " + total, 528.322, 484.311, left_center);
   
-    invoice.text("P 0.00", 528.322, 475.978, left_center);
-    invoice.text("P " + total, 528.322, 489.311, left_center);
+    // invoice.text("P 0.00", 528.322, 497.645, left_center);
   
-    invoice.text("P 0.00", 528.322, 502.645, left_center);
-  
-    invoice.text("P " + total, 528.322, 527.312, left_center);
+    invoice.text("P " + total, 528.322, 522.312, left_center);
   
     invoice.endPage();
     invoice.endPDF();
@@ -446,7 +461,19 @@ const createInvoice=(tenant, payments, total, billing_date, invoice_id) => {
   })
 }
 
-  
+ 
+function findArears(arr){
+
+  var arrears=null;
+  arr.forEach(item =>{
+    if (item[2] =='Arrears'){
+      arrears = item[4]
+    }
+  })
+
+  return arrears
+
+}
 
 function uploadToCloudinary(file_path ,file_name){
 
@@ -475,9 +502,12 @@ function uploadToCloudinary(file_path ,file_name){
 
 //EMAIL
 const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
+
+  let file_path;
  
  createInvoice(tenant , payments , total ,billing_date , invoice_id)
  .then(res => {
+   file_path = res.file_path
       uploadToCloudinary(res.file_path , res.file_name).then(res=> console.log("This link "+res))
   })
  .then(res => console.log('Suppose to be the link: '+res))
@@ -498,6 +528,7 @@ const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
   }
 
  })
+ .then(() => fs.unlink(file_path, (err) => console.log("invoice deleted")))
  .catch(err => console.log("Error: "+err))
  
   const html_invoice = `
@@ -652,7 +683,7 @@ async function print_invoice(
   tenant,
   payments,
   total,
-  billing_date,
+  billing_dates,
   invoice_id
 ) {
   console.log("printing invoice");
@@ -664,16 +695,24 @@ async function print_invoice(
     var left_center = { align: "left center", fontSize: 11, color: "#000000" };
     var center = { align: "center center", fontSize: 11, color: "#000000" };
 
-    invoice.createPage("a4");
-    invoice.image("./invoice_template/invoice.pdf", 0, 0);
+    const d  = new Date()
+    const month = d.getMonth()+2 % 12
+    const year  = d.getFullYear()
+    const billing_date = "01"+"/"+month+"/"+year
 
+    var arrears = findArears(payments)
+  
+    invoice.createPage("a4");
+    invoice.image("./invoice_template/invoice2.pdf", 0, 0);
+
+  
     invoice.text(
       tenant.first_name + " " + tenant.last_name,
       23.322,
       129.478,
       left_center
     );
-
+  
     invoice.text(
       tenant.ID + tenant.first_name.substring(0, 3).toUpperCase(),
       79.484,
@@ -682,9 +721,10 @@ async function print_invoice(
     );
     invoice.text(billing_date, 184.151, 228.479, center);
     invoice.text("INV" + invoice_id, 517.484, 228.479, center);
-
+  
     var y = 272.812;
     for (var i = 0; i < payments.length; i++) {
+      if(payments[i][2]=='Arrears' ) continue
       invoice.text(i + 1, 22.322, y, left_center); //itemcode
       invoice.text(payments[i][2], 100.988, y, left_center); //desc
       invoice.text("P 0.00", 227.988, y, left_center);
@@ -694,16 +734,20 @@ async function print_invoice(
       invoice.text("P " + payments[i][4], 527.655, y, left_center); //line total
       y = y + 13;
     }
-
-    invoice.text("P " + total, 528.322, 460.978, left_center);
-
-    invoice.text("P 0.00", 528.322, 475.978, left_center);
-    invoice.text("P " + total, 528.322, 489.311, left_center);
-
-    invoice.text("P 0.00", 528.322, 502.645, left_center);
-
-    invoice.text("P " + total, 528.322, 527.312, left_center);
-
+  
+    if(arrears){
+      invoice.text("P " + total, 528.322, 455.978, left_center);
+    }
+    else{
+      invoice.text("P0.00", 528.322, 455.978, left_center);
+    }
+    invoice.text("P 0.00", 528.322, 470.978, left_center);
+    invoice.text("P " + total, 528.322, 484.311, left_center);
+  
+    // invoice.text("P 0.00", 528.322, 497.645, left_center);
+  
+    invoice.text("P " + total, 528.322, 522.312, left_center);
+  
     invoice.endPage();
     invoice.endPDF();
 
@@ -864,7 +908,7 @@ async function print_invoice(
       })
     );
 
-    //fs.unlink(file_path, (err) => console.log("invoice deleted"));
+    fs.unlink(file_path, (err) => console.log("invoice deleted"));
 
     // fake_url = `www.invoice.com`;
     var [update, error] = await handle(

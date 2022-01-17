@@ -17,9 +17,19 @@ const get_tenant_bills = require("./modules/tenant/get_tenant_bills");
 const bulk_upload_tenants = require("./modules/tenant/bulk_upload");
 const XLSX = require("xlsx");
 const multer = require("multer");
+const changeInvoiceDate = require('./modules/tenant/changeInvoiceDate');
+
 // const billing_inspector = require("./modules/tenant/billing_inspector");
 // const upload = multer({ dest: "uploads/" });
 const inspector = require("./modules/tenant/billing_inspector");
+
+module.exports.changeInvoiceDate = (req,res, next)=>{
+  changeInvoiceDate(req.body).then(
+    () => res.send({success: "success"})
+  ).catch(error => res.status(200).send(error))
+}
+
+
 
 module.exports.bulk_upload = (req, res, next) => {
   const file = XLSX.readFile(req.file.path);
