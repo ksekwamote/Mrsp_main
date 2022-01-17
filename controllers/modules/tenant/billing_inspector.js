@@ -184,6 +184,21 @@ module.exports = async (params) => {
 
           console.log(invoice);
 
+          //getting the publish date for the invoices that has been set
+          // let [publishing_date, date_error] = await handle(
+          //   promise_query("select publish_date from productkey")
+          // );
+          // if (date_error) throw Error(tenant_error.toString());
+          // cache["pusblish_date"] = publishing_date;
+
+          /**
+           * since the publish date is a single date that doesn't have any tables dependent on
+           * i was suggesting we add the field to the product key
+           */
+
+          //TODO: this queing of the notification should be dependent on the with the link to the pdf invoice should
+          // should be implemented when the the distribution date is the current date
+          // if(cache.publish_date === _today){}
           queue_notif(
             tenant.email_address,
             "Your latest invoice has been prepared for you. Here is a secured link to your copy:\n" +
@@ -195,7 +210,10 @@ module.exports = async (params) => {
             "Your latest invoice has been prepared for you. Here is a secured link to your copy:\n" +
               invoice
           );
+
           console.log("tenant billed");
+
+          // the above snippet of code should go into the if statement
         } else {
           console.log("tenant already billed for this month");
         }
@@ -222,7 +240,7 @@ module.exports = async (params) => {
 //function gets the date that the tenant has to be billed on.
 function get_billing_date(tenant) {
   console.log("-----> get billing date");
-  var due = 34
+  var due = 34;
   var due_day = pad(tenant.rental_preset.due_day);
   var str = today_arr[0] + "-" + today_arr[1] + "-" + due_day;
   var this_month = validate(str);
@@ -389,7 +407,6 @@ async function bill_tenant(tenant, billing_date) {
 const createInvoice=(tenant, payments, total, billing_dates, invoice_id) => {
 
   return new Promise((resolve, reject) => {
-
     const file_name = `invoice_${Date.now().toString()}.pdf`;
     const file_path = process.env.BASE_PATH + file_name;
     const invoice = new HummusRecipe("new", file_path);
@@ -415,7 +432,7 @@ const createInvoice=(tenant, payments, total, billing_dates, invoice_id) => {
       129.478,
       left_center
     );
-  
+
     invoice.text(
       tenant.ID + tenant.first_name.substring(0, 3).toUpperCase(),
       79.484,
@@ -424,7 +441,7 @@ const createInvoice=(tenant, payments, total, billing_dates, invoice_id) => {
     );
     invoice.text(billing_date, 184.151, 228.479, center);
     invoice.text("INV" + invoice_id, 517.484, 228.479, center);
-  
+
     var y = 272.812;
     for (var i = 0; i < payments.length; i++) {
       if(payments[i][2]=='Arrears' ) continue
@@ -475,30 +492,29 @@ function findArears(arr){
 
 }
 
-function uploadToCloudinary(file_path ,file_name){
+ 
 
- return new Promise((resolve, reject) => {
+function uploadToCloudinary(file_path, file_name) {
+  return new Promise((resolve, reject) => {
+    var opts = {
+      overwrite: true,
+      invalidate: true,
+      public_id: "online",
+      resource_type: "auto",
+    };
 
-  var  opts = {
-    overwrite: true,
-    invalidate: true,
-    public_id: 'online',
-    resource_type: "auto"
-  };
-  
-  cloudinary.uploader.upload(file_path, opts ,function (error, result) {
-    if(result && result.secure_url){
-     console.log("URL "+result.secure_url)
-     invoiceFile = result.secure_url 
-     return resolve(result.secure_url);
-    }else{
-      console.log(error);
-      return reject({message: error.message});
-    }
- });
-  })
+    cloudinary.uploader.upload(file_path, opts, function (error, result) {
+      if (result && result.secure_url) {
+        console.log("URL " + result.secure_url);
+        invoiceFile = result.secure_url;
+        return resolve(result.secure_url);
+      } else {
+        console.log(error);
+        return reject({ message: error.message });
+      }
+    });
+  });
 }
-
 
 //EMAIL
 const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
@@ -520,12 +536,24 @@ const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
       subject: "Sycamon [Accounts] ",
       html: html_invoice,
     })
-  );
+  )
+    .then((res) => console.log("Suppose to be the link: " + res))
+    .then((res) => {
+      var [result, error] = handle(
+        messenger.mail({
+          from: "sycamon.bw@gmail.com",
+          to: `${tenant.email_address}`,
+          subject: "Sycamon [Accounts] ",
+          html: html_invoice,
+        })
+      );
 
-  if (error) {
-    console.log(error);
-    throw Error("error sending invoice ");
-  }
+      if (error) {
+        console.log(error);
+        throw Error("error sending invoice ");
+      }
+    })
+    .catch((err) => console.log("Error: " + err));
 
  })
  .then(() => fs.unlink(file_path, (err) => console.log("invoice deleted")))
@@ -672,12 +700,7 @@ const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
 </div>
 
 `;
-
-  
-  
 };
-
-
 
 async function print_invoice(
   tenant,
@@ -880,7 +903,6 @@ async function print_invoice(
 `;
     //queue_notif(tenant.email_address, html_invoice);
 
-
     console.log(
       "path =================================================>",
       file_path
@@ -898,7 +920,7 @@ async function print_invoice(
           },
           function (error, result) {
             if (result && result.secure_url) {
-              console.log(result.secure_url)
+              console.log(result.secure_url);
               return resolve(result.secure_url);
             } else {
               return reject({ message: error.toString() });
@@ -910,7 +932,6 @@ async function print_invoice(
 
     fs.unlink(file_path, (err) => console.log("invoice deleted"));
 
-    // fake_url = `www.invoice.com`;
     var [update, error] = await handle(
       promise_query("update Invoice set file = ? where ID = ? ", [
         upload_url,
@@ -921,7 +942,6 @@ async function print_invoice(
 
     console.log("starting a invoice upload =========>");
     return upload_url;
-    // return `www.invoice.com`;
   } catch (e) {
     console.log(e);
   }
