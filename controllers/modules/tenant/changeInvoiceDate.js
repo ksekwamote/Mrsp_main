@@ -16,7 +16,7 @@ module.exports = (params) => {
 
 module.exports.getInvoiceDate = () => {
     return new Promise((resolve, reject) => {
-        promise_query('select * from rentalpreset limit 1')
+        promise_query('select * from RentalPreset limit 1')
         .then((res) => resolve(res))
         .catch((err)=> reject({error:err}))
     })
