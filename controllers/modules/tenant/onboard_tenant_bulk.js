@@ -62,7 +62,7 @@ module.exports = (params) => {
         lapse_date.setMonth(lapse_date.getMonth() + params.tenancy_period);
         tenant = {
           TenantID: 0,
-          ListingID: 3,
+          ListingID: params.listing_id,
           RentalPresetID: preset.ID,
           move_in_date: params.date,
           tenancy_period: params.tenancy_period,
