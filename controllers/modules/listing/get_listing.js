@@ -7,7 +7,7 @@ module.exports = (params) => {
         promise_query('select * from Listing where ID = ?', [params.listing_id])
         .then((listing) => {
             payload['listing'] = listing[0];
-            return promise_query('select * from RentalPreset where LandLordID = ?', [payload.listing.LandLordID]);
+            return promise_query('select RentalPreset.*, Listing.RentalPresetID from RentalPreset LEFT JOIN Listing ON Listing.RentalPresetID = RentalPreset.id where RentalPreset.LandLordID = ? and Listing.ID = ?', [payload.listing.LandLordID , payload.listing.ID]);
         })
         .then((rental_presets) => {
             payload['rental_presets'] = rental_presets;

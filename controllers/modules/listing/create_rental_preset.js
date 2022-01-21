@@ -4,7 +4,7 @@ module.exports = (params) => {
     console.log(params);
     return new Promise((resolve, reject) => {
         var listing_id = params.ListingID;
-        var sql = "update RentalPreset set name = ?, monthly_rent = ?, security_deposit  = ?, escalation_type = ?, escalation_rate = ?, escalation_interval = ?, due_day  = ?, pro_rate_method  = ?, allow_partial_rent  = ?, allow_partial_misc  = ?, charge_late_fee = ?, grace_period  = ?, charge_flat  = ?, charge_daily  = ?, flat_late_fee = ?, daily_rate  = ?, max_cumulative_late_fee  = ?, other_monthly_fees = ? where ID = ?";
+        var sql = "update RentalPreset set name = ?, monthly_rent = ?, security_deposit  = ?, escalation_type = ?, escalation_rate = ?, escalation_interval = ?, due_day  = ?, pro_rate_method  = ?, allow_partial_rent  = ?, allow_partial_misc  = ?, charge_late_fee = ?, grace_period  = ?, charge_flat  = ?, charge_daily  = ?, flat_late_fee = ?, daily_rate  = ?, max_cumulative_late_fee  = ?, other_monthly_fees = ? , purchase_order = ?  where ID = ?";
         var args = [
             params.name,
             params.monthly_rent,
@@ -24,7 +24,9 @@ module.exports = (params) => {
             params.daily_rate,
             params.max_cumulative_late_fee,
             params.other_monthly_fees,
-            params.rental_preset_id
+            params.purchase_order,
+            params.rental_preset_id, 
+            
         ];
 
         if(params.update === 'true'){
@@ -37,8 +39,11 @@ module.exports = (params) => {
             delete params['update'];
             delete params['rental_preset_id'];
             delete params['ListingID'];
-
+            
             promise_query('insert into RentalPreset set ?', [params])
+            .then(res => {
+                return (promise_query('update Listing set RentalPresetID = ? where ID = ? ',[res.insertId ,listing_id]))
+            })
             .then(result => resolve({url: '/listings/view_listing?id='+listing_id}))
             .catch(error => reject(error));
         }

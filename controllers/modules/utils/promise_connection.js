@@ -1,6 +1,6 @@
 require("dotenv").config({ path: require("app-root-path") + "/.env" });
 var connection = require("mysql").createPool({
-  connectionLimit: 10,
+  connectionLimit: 10000,
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
   user: process.env.DB_USERNAME,

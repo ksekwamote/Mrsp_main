@@ -29,7 +29,7 @@ module.exports = (data, landlordId) => {
         first_name: data[i].first_name,
         last_name: data[i].last_name === "null" ? null : data[i].last_name,
         email_address: data[i].email_address,
-        phone_number: data[i].phone_number,
+        phone_number: data[i].phone_number.toString(),
         listing_id: data[i].listingID,
         tenancy_period: data[i].tenancy_period,
         date: onboardDate,

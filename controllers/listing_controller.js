@@ -14,12 +14,12 @@ const get_rental_analysis = require("./modules/listing/get_rental_analysis");
 const update_potential_credit_loss = require("./modules/listing/update_potential_credit_loss");
 const manage_expenses = require("./modules/listing/manage_expenses");
 const expenses = require("./modules/listing/expenses");
-// const billing_inspector = require("./modules/tenant/billing_inspector");
+const billing_inspector = require("./modules/tenant/billing_inspector");
 
 module.exports.load = (req, res, next) => {
- // billing_inspector()
-    // .then((result) => console.log(result))
-    // .catch((error) => console.log(error));
+//  billing_inspector()
+//     .then((result) => console.log(result))
+//     .catch((error) => console.log(error));
 
   get_listings({ landlord_id: req.session.passport.user })
     .then((result) => res.render("listings.ejs", { payload: result }))
@@ -86,6 +86,7 @@ module.exports.create_rental_preset = (req, res, next) => {
       ? req.body.max_cumulative_late_fee
       : 0,
     other_monthly_fees: req.body.other_monthly_fees,
+    purchase_order: req.body.purchase_order,
     update: req.body.update_rental,
     presetdefault: "true",
     rental_preset_id: req.body.rental_preset_id,

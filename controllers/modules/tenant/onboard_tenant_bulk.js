@@ -11,16 +11,12 @@ module.exports = (params) => {
     var preset;
     var tenantID
 
+    console.log(params)
+
     promise_query("select ID from PendingTenant where email_address = ?", [
       params.email_address,
     ])
       .then((result) => {
-        if (result.length > 0)
-          return reject({
-            message:
-              "Account already added.There's a pending tenant for this property",
-          });
-
         return promise_query("select * from RentalPreset where ID = ?", [
           params.rental_preset_id,
         ]);
@@ -123,15 +119,16 @@ module.exports = (params) => {
 
           if (scheduled_escalations.length > 0) {
             (async () => {
-              var [error, result] = await handle(
+              
                 promise_query(
                   "insert into ScheduledEscalation(ActiveTenantID, RentalPresetID, effective_date, base_rent, escalated_rent, effected) values ?",
                   [scheduled_escalations.map((e) => Object.values(e))]
-                )
-              );
+                ).then(res => console.log(res))
+                .catch(err => console.log(err))
+             
 
-              handle.throw(error);
-              console.log(result);
+              
+             // console.log(result);
             })();
           }
         }

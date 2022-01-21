@@ -187,6 +187,7 @@ $("#exampleModalLong").on("show.bs.modal", function (event) {
     document.getElementById("due_day").value = preset.due_day;
     document.getElementById("escalation_rate").value = preset.escalation_rate;
     document.getElementById("escalation_type").value = preset.escalation_type;
+    document.getElementById('purchase_order').value = preset.purchase_order
     document.getElementById("escalation_interval").value =
       preset.escalation_interval;
 

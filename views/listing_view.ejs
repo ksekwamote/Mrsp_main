@@ -913,7 +913,7 @@
                                     <div class="col-12 p-0">
                                         <p id=""></p>
                                         <h5 class="bg-dark text-light p-3 rounded-0">
-                                            <b> Rental Presets</b>
+                                            <b> Rental Preset</b>
                                         </h5>
                                     </div>
                                 </div>
@@ -990,10 +990,10 @@
     
                                                                                         <input type="hidden" name="rental_preset_id" value="<?=payload.rental_presets[i].ID?>">
                                                                                         <input type="hidden" name="listing_id" value="<?=payload.listing.ID?>">
-                                                                                        <button
+                                                                                        <!-- <button
                                                                                         type="submit"
                                                                                          style="color: white; font-size: 1em;"  class="btn btn-sm btn-danger mt-3">
-                                                                                        Delete </button>
+                                                                                        Delete </button> -->
                                                                                     </form>
                                                                             </td>
                                                                         </tr>
@@ -1277,6 +1277,13 @@
                                                     <input required type="number" name="escalation_interval" id="escalation_interval" step="1" min="1" max="100" class="form-control" placeholder="# Months">
                                                   </div>
                                                 </div>
+                                                <div class="form-row mb-4">
+                                                  <div class="col-md-4">
+                                                    <small class="text-muted">Purchase Order Number</small>
+                                                    <input name="purchase_order" id="purchase_order" class="form-control" placeholder="#order No.">
+                                                  </div>
+                                                </div>
+                                                
                                                 <hr>
                                                 <div class="form-row mb-4">
                                                     <div class="col">

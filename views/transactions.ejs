@@ -134,17 +134,6 @@
                 </div>
               </div>
 
-              <div style="display: flex; flex-direction: row; justify-content: flex-start; align-items: center;">
-                <label for="invoice">Billing Date: </label>
-                <input type="date" id="invoice" name="invoice">
-                <button id="changeInvoiceDate" >Change Billing Date</button>
-
-              </div>
-              <div style="display: flex; flex-direction: row; justify-content: flex-start; align-items: center;">
-                  <p>Current Date:      </p>
-                  <p id="invo"></p>
-              </div>
-
               <div
                 class="
                   col-lg-11 col-md-12 col-12
@@ -451,24 +440,7 @@
 
       
 
-        $('#changeInvoiceDate').on("click" , function(){
-          var invoice_date = document.getElementById('invoice').value;
 
-           $.ajax({
-             method:"post",
-             url:"/tenants/changeInvoiceDate",
-             data:{
-                due_date: invoice_date.split('-')[2]
-             },
-             success: function(data){
-               alert('Invoice date has succesfully been changed to '+invoice_date)
-               billing()
-             },
-             error: function(error){
-               alert('An error has a occured , try again or contact IT '+error)
-             }
-           })
-        })
 
         $("#confirm_pop_modal").on("show.bs.modal", (event) => {
           var button = $(event.relatedTarget);

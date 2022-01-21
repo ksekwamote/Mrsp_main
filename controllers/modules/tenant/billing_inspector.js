@@ -199,17 +199,6 @@ module.exports = async (params) => {
           //TODO: this queing of the notification should be dependent on the with the link to the pdf invoice should
           // should be implemented when the the distribution date is the current date
           // if(cache.publish_date === _today){}
-          queue_notif(
-            tenant.email_address,
-            "Your latest invoice has been prepared for you. Here is a secured link to your copy:\n" +
-              invoice
-          );
-
-          queue_notif(
-            tenant.email_address,
-            "Your latest invoice has been prepared for you. Here is a secured link to your copy:\n" +
-              invoice
-          );
 
           console.log("tenant billed");
 
@@ -410,14 +399,19 @@ const createInvoice=(tenant, payments, total, billing_dates, invoice_id) => {
     const file_name = `invoice_${Date.now().toString()}.pdf`;
     const file_path = process.env.BASE_PATH + file_name;
     const invoice = new HummusRecipe("new", file_path);
+
     var left_center = { align: "left center", fontSize: 11, color: "#000000" };
+    var right_center = { align: "right center", fontSize: 11, color: "#000000" };
     var center = { align: "center center", fontSize: 11, color: "#000000" };
+
 
     const d  = new Date()
     const month = d.getMonth()+2 % 12
     const year  = d.getFullYear()
     const billing_date = "01"+"/"+month+"/"+year
+    
 
+    console.log(tenant)
 
 
     var arrears = findArears(payments)
@@ -438,35 +432,41 @@ const createInvoice=(tenant, payments, total, billing_dates, invoice_id) => {
       79.484,
       228.478,
       center
-    );
-    invoice.text(billing_date, 184.151, 228.479, center);
-    invoice.text("INV" + invoice_id, 517.484, 228.479, center);
+    ); //Account
+    invoice.text(billing_date, 184.151, 228.479, center);  //DATE
+    invoice.text(tenant.rental_preset.purchase_order, 293.818, 228.479, center);  //Order No
+    invoice.text("INV" + invoice_id, 517.484, 228.479, center); //Our reference
 
     var y = 272.812;
     for (var i = 0; i < payments.length; i++) {
       if(payments[i][2]=='Arrears' ) continue
       invoice.text(i + 1, 22.322, y, left_center); //itemcode
       invoice.text(payments[i][2], 100.988, y, left_center); //desc
-      invoice.text("P 0.00", 227.988, y, left_center);
-      invoice.text("P 0.00", 279.988, y, left_center);
+      invoice.text("0.00", 227.988, y, left_center);
+      invoice.text("0.00", 279.988, y, left_center);
       invoice.text("1", 317.321, y, left_center);
-      invoice.text("P " + payments[i][4], 390.655, y, left_center); //price
-      invoice.text("P " + payments[i][4], 527.655, y, left_center); //line total
+      invoice.text(" " + payments[i][4], 390.655, y, left_center); //price
+      invoice.text(" " + payments[i][4], 527.655, y, left_center); //line total
       y = y + 13;
     }
+
+    var realTotal=total;
   
     if(arrears){
-      invoice.text("P " + total, 528.322, 455.978, left_center);
+      invoice.text(" " + arrears, 528.322, 455.978, right_center);
+      realTotal = (parseInt(arrears + total)).toString()
     }
     else{
-      invoice.text("P0.00", 528.322, 455.978, left_center);
+      invoice.text("0.00", 548.322, 455.978, right_center);
     }
-    invoice.text("P 0.00", 528.322, 470.978, left_center);
-    invoice.text("P " + total, 528.322, 484.311, left_center);
+    invoice.text("0.00", 548.322, 470.978, right_center);
+    invoice.text(" " + total, 548.322, 584.311, right_center);
   
     // invoice.text("P 0.00", 528.322, 497.645, left_center);
+
+    
   
-    invoice.text("P " + total, 528.322, 522.312, left_center);
+    invoice.text(" " + realTotal, 548.322, 522.312, right_center);
   
     invoice.endPage();
     invoice.endPDF();
@@ -520,186 +520,329 @@ function uploadToCloudinary(file_path, file_name) {
 const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
 
   let file_path;
+  let cloudpath;
  
  createInvoice(tenant , payments , total ,billing_date , invoice_id)
  .then(res => {
-   file_path = res.file_path
-      uploadToCloudinary(res.file_path , res.file_name).then(res=> console.log("This link "+res))
-  })
- .then(res => console.log('Suppose to be the link: '+res))
- .then(res =>{
+      file_path = res.file_path
 
-  var [result, error] = handle(
-    messenger.mail({
-      from: "sycamon.bw@gmail.com",
-      to: `${tenant.email_address}`,
-      subject: "Sycamon [Accounts] ",
-      html: html_invoice,
-    })
-  )
-    .then((res) => console.log("Suppose to be the link: " + res))
-    .then((res) => {
-      var [result, error] = handle(
-        messenger.mail({
+     return( uploadToCloudinary(res.file_path , res.file_name))
+     
+  })
+ .then((result) => {
+      
+      return(  handle(messenger.mail({
           from: "sycamon.bw@gmail.com",
           to: `${tenant.email_address}`,
           subject: "Sycamon [Accounts] ",
-          html: html_invoice,
-        })
-      );
-
-      if (error) {
-        console.log(error);
-        throw Error("error sending invoice ");
-      }
-    })
-    .catch((err) => console.log("Error: " + err));
-
- })
- .then(() => fs.unlink(file_path, (err) => console.log("invoice deleted")))
- .catch(err => console.log("Error: "+err))
+          html: html_invoice(result),
+          attachments: [{
+            filename: "sycamon_invoice.pdf",
+            path:result
+        }]  
+    })))
+     })
+    .catch((err) => console.log("Error: " + err))
+    .then(() => fs.unlink(file_path, (err) => console.log("invoice deleted")))
  
-  const html_invoice = `
-  <div>
-  <div style="text-align: center; font-weight: bold; font-size: 2rem">
-    Tax Invoice
-  </div>
-  <span>
-    <div style="display: inline-block">
-      <ul style="list-style: none; float: left">
-        <li><span style="font-weight: bold">Sycamon</span></li>
-        <li>P O Box 404515</li>
-        <li>Gaborone</li>
-        <br />
-        <li><span style="font-weight: bold">To:</span></li>
-        <li>${tenant.first_name + " " + tenant.last_name}</li>
-      </ul>
+  const html_invoice = (cloudpath) => {
+    return `
+  <div class="clean-body u_body" style="line-height: inherit; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; background-color: #ffffff; color: #000000;">
+    <!--[if IE]><div class="ie-container"><![endif]-->
+    <!--[if mso]><div class="mso-container"><![endif]-->
+    <table style="line-height: inherit; color: #000000; border-collapse: collapse; table-layout: fixed; border-spacing: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt; vertical-align: top; min-width: 320px; Margin: 0 auto; background-color: #ffffff; width: 100%;" cellpadding="0" cellspacing="0" width="100%" valign="top" bgcolor="#ffffff">
+    <tbody style="line-height: inherit;">
+    <tr style="line-height: inherit; border-collapse: collapse; vertical-align: top;" valign="top">
+      <td style="line-height: inherit; color: #000000; word-break: break-word; vertical-align: top; border-collapse: collapse;" valign="top">
+      <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="background-color: #ffffff;"><![endif]-->
+      
+  
+  <div class="u-row-container" style="line-height: inherit; padding: 0px; background-color: transparent;">
+    <div class="u-row" style="line-height: inherit; Margin: 0 auto; min-width: 320px; max-width: 600px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: #017ed0;">
+      <div style="line-height: inherit; border-collapse: collapse; display: table; width: 100%; background-color: transparent;">
+        <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr style="background-color: #017ed0;"><![endif]-->
+        
+  <!--[if (mso)|(IE)]><td align="center" width="600" style="width: 600px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;" valign="top"><![endif]-->
+  <div class="u-col u-col-100" style="line-height: inherit; max-width: 320px; min-width: 600px; display: table-cell; vertical-align: top;">
+    <div style="line-height: inherit; width: 100%;">
+    <!--[if (!mso)&(!IE)]><!--><div style="line-height: inherit; padding: 0px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-right: 0px solid transparent; border-bottom: 0px solid transparent;"><!--<![endif]-->
+    
+  <table style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; font-family: 'Open Sans',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0" valign="top">
+    <tbody style="line-height: inherit;">
+      <tr style="line-height: inherit; vertical-align: top; border-collapse: collapse;" valign="top">
+        <td style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; overflow-wrap: break-word; word-break: break-word; padding: 40px 10px 19px; font-family: 'Open Sans',sans-serif;" align="left" valign="top">
+          
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse;" valign="top">
+    <tr style="line-height: inherit; vertical-align: top; border-collapse: collapse;" valign="top">
+      <td style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; padding-right: 0px; padding-left: 0px;" align="center" valign="top">
+        
+        <img align="center" border="0" src="https://res.cloudinary.com/thito-holdings/image/upload/v1642681561/online/image-1_nmjzcm.png" alt="Image" title="Image" style="line-height: inherit; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; clear: both; border: none; height: auto; float: none; width: 26%; max-width: 150.8px; display: inline-block;" width="150.8">
+        
+      </td>
+    </tr>
+  </table>
+  
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <table style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; font-family: 'Open Sans',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0" valign="top">
+    <tbody style="line-height: inherit;">
+      <tr style="line-height: inherit; vertical-align: top; border-collapse: collapse;" valign="top">
+        <td style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; overflow-wrap: break-word; word-break: break-word; padding: 10px 10px 0px; font-family: 'Open Sans',sans-serif;" align="left" valign="top">
+          
+    <div style="color: #ffffff; line-height: 140%; text-align: center; word-wrap: break-word;">
+      <p style="margin: 0; font-size: 14px; line-height: 140%;"><span style="font-size: 28px; line-height: 39.2px;"><strong style="line-height: inherit;"><span style="line-height: 39.2px; font-size: 28px;">Thank you for renting with us</span></strong></span></p>
     </div>
-
-    <div style="display: inline-block; float: right">
-      <ul style="list-style: none">
-        <li>
-          Tax Registration: <span style="font-weight: bold">C11315201111</span>
-        </li>
-        <li>Telphone: <span style="font-weight: bold">00267-3999800</span></li>
-        <li>Fax: <span style="font-weight: bold">00267-3902025</span></li>
-      </ul>
+  
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <table style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; font-family: 'Open Sans',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0" valign="top">
+    <tbody style="line-height: inherit;">
+      <tr style="line-height: inherit; vertical-align: top; border-collapse: collapse;" valign="top">
+        <td style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; overflow-wrap: break-word; word-break: break-word; padding: 10px 10px 26px; font-family: 'Open Sans',sans-serif;" align="left" valign="top">
+          
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse;" valign="top">
+    <tr style="line-height: inherit; vertical-align: top; border-collapse: collapse;" valign="top">
+      <td style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; padding-right: 0px; padding-left: 0px;" align="center" valign="top">
+        
+        <img align="center" border="0" src="https://res.cloudinary.com/thito-holdings/image/upload/v1642681550/online/image-2_ghesxg.png" alt="Image" title="Image" style="line-height: inherit; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; clear: both; border: none; height: auto; float: none; width: 100%; max-width: 580px; display: inline-block;" width="580">
+        
+      </td>
+    </tr>
+  </table>
+  
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+    <!--[if (!mso)&(!IE)]><!--></div><!--<![endif]-->
     </div>
-  </span>
+  </div>
+  <!--[if (mso)|(IE)]></td><![endif]-->
+        <!--[if (mso)|(IE)]></tr></table></td></tr></table><![endif]-->
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  <div class="u-row-container" style="line-height: inherit; padding: 0px; background-color: transparent;">
+    <div class="u-row" style="line-height: inherit; Margin: 0 auto; min-width: 320px; max-width: 600px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: #f9f9f9;">
+      <div style="line-height: inherit; border-collapse: collapse; display: table; width: 100%; background-color: transparent;">
+        <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr style="background-color: #f9f9f9;"><![endif]-->
+        
+  <!--[if (mso)|(IE)]><td align="center" width="600" style="width: 600px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;" valign="top"><![endif]-->
+  <div class="u-col u-col-100" style="line-height: inherit; max-width: 320px; min-width: 600px; display: table-cell; vertical-align: top;">
+    <div style="line-height: inherit; width: 100%;">
+    <!--[if (!mso)&(!IE)]><!--><div style="line-height: inherit; padding: 0px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-right: 0px solid transparent; border-bottom: 0px solid transparent;"><!--<![endif]-->
+    
+  <table style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; font-family: 'Open Sans',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0" valign="top">
+    <tbody style="line-height: inherit;">
+      <tr style="line-height: inherit; vertical-align: top; border-collapse: collapse;" valign="top">
+        <td style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; overflow-wrap: break-word; word-break: break-word; padding: 28px 33px 25px; font-family: 'Open Sans',sans-serif;" align="left" valign="top">
+          
+    <div style="color: #444444; line-height: 200%; text-align: center; word-wrap: break-word;">
+      <p style="margin: 0; font-size: 14px; line-height: 200%;"><span style="font-size: 22px; line-height: 44px;">Hello,</span><br style="line-height: inherit;"><span style="font-size: 16px; line-height: 32px;">We've attached this month's invoice in this email for your convenience. </span></p>
+  <p style="margin: 0; font-size: 14px; line-height: 200%;"><span style="font-size: 16px; line-height: 32px;">Our newly created <strong style="line-height: inherit;">property management app</strong> allows for you to see your payment history&nbsp; , attach proof of payment&nbsp; , send maintenance requests ,lease management , see notifications and more. Click the button below or visit us at <strong style="line-height: inherit;">sycamon.bw</strong>&nbsp;</span></p>
+  <p style="margin: 0; font-size: 14px; line-height: 200%;">&nbsp;</p>
+  <p>Having trouble downloading your invoice , <a href="${cloudpath}"  target="_blank" ><strong>click here</strong></a></p>
+  <p style="margin: 0; font-size: 14px; line-height: 200%;"><span style="font-size: 16px; line-height: 32px;">Thank You</span></p>
+    </div>
+  
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+    <!--[if (!mso)&(!IE)]><!--></div><!--<![endif]-->
+    </div>
+  </div>
+  <!--[if (mso)|(IE)]></td><![endif]-->
+        <!--[if (mso)|(IE)]></tr></table></td></tr></table><![endif]-->
+      </div>
+    </div>
+  </div>
+  
+  
 
-  <div align="center">
-    <table>
-      <tr>
-        <th style="padding: 20px">Account</th>
-        <th style="padding: 20px">Date</th>
-        <th style="padding: 20px">Order No</th>
-        <th style="padding: 20px">Delivery Note</th>
-        <th style="padding: 20px">Our Reference</th>
-      </tr>
-      <tr>
-        <td
-          style="
-            border-radius: 10px;
-            padding: 20px;
-            border-width: 1px;
-            text-align: center;
-          "
-        >
-          ${tenant.ID + tenant.first_name.substring(0, 3).toUpperCase()}
-        </td>
-        <td
-          style="
-            border-radius: 10px;
-            padding: 20px;
-            border-width: 1px;
-            text-align: center;
-          "
-        >
-          ${billing_date}
-        </td>
-        <td
-          style="
-            border-radius: 10px;
-            padding: 20px;
-            border-width: 1px;
-            text-align: center;
-          "
-        >
-          &nbsp;
-        </td>
-        <td
-          style="
-            border-radius: 10px;
-            padding: 20px;
-            border-width: 1px;
-            text-align: center;
-          "
-        ></td>
-        <td
-          style="
-            border-radius: 10px;
-            padding: 20px;
-            border-width: 1px;
-            text-align: center;
-          "
-        >
-          INV${invoice_id}
+  
+  <div class="u-row-container" style="line-height: inherit; padding: 0px; background-color: transparent;">
+    <div class="u-row" style="line-height: inherit; Margin: 0 auto; min-width: 320px; max-width: 600px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: #f9f9f9;">
+      <div style="line-height: inherit; border-collapse: collapse; display: table; width: 100%; background-color: transparent;">
+        <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr style="background-color: #f9f9f9;"><![endif]-->
+        
+  <!--[if (mso)|(IE)]><td align="center" width="600" style="width: 600px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;" valign="top"><![endif]-->
+  <div class="u-col u-col-100" style="line-height: inherit; max-width: 320px; min-width: 600px; display: table-cell; vertical-align: top;">
+    <div style="line-height: inherit; width: 100%;">
+    <!--[if (!mso)&(!IE)]><!--><div style="line-height: inherit; padding: 0px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-right: 0px solid transparent; border-bottom: 0px solid transparent;"><!--<![endif]-->
+    
+  <table style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; font-family: 'Open Sans',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0" valign="top">
+    <tbody style="line-height: inherit;">
+      <tr style="line-height: inherit; vertical-align: top; border-collapse: collapse;" valign="top">
+        <td style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; overflow-wrap: break-word; word-break: break-word; padding: 10px 10px 0px; font-family: 'Open Sans',sans-serif;" align="left" valign="top">
+          
+  <div align="center" style="line-height: inherit;">
+    <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-spacing: 0; border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;font-family:'Open Sans',sans-serif;"><tr><td style="font-family:'Open Sans',sans-serif;" align="center"><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://sycamon.bw/" style="height:50px; v-text-anchor:middle; width:346px;" arcsize="80%" stroke="f" fillcolor="#272362"><w:anchorlock/><center style="color:#FFFFFF;font-family:'Open Sans',sans-serif;"><![endif]-->
+      <a href="https://sycamon.bw/" target="_blank" style="line-height: inherit; box-sizing: border-box; display: inline-block; font-family: 'Open Sans',sans-serif; text-decoration: none; -webkit-text-size-adjust: none; text-align: center; color: #FFFFFF; background-color: #272362; border-radius: 40px; -webkit-border-radius: 40px; -moz-border-radius: 40px; width: auto; max-width: 100%; overflow-wrap: break-word; word-break: break-word; word-wrap: break-word; mso-border-alt: none;">
+        <span style="display: block; padding: 15px 44px; line-height: 120%;"><span style="font-size: 16px; line-height: 19.2px;"><strong style="line-height: inherit;"><span style="line-height: 19.2px; font-size: 16px;">Click here to go to sycamon.bw</span></strong></span></span>
+      </a>
+    <!--[if mso]></center></v:roundrect></td></tr></table><![endif]-->
+  </div>
         </td>
       </tr>
+    </tbody>
+  </table>
+  
+  <table style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; font-family: 'Open Sans',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0" valign="top">
+    <tbody style="line-height: inherit;">
+      <tr style="line-height: inherit; vertical-align: top; border-collapse: collapse;" valign="top">
+        <td style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; overflow-wrap: break-word; word-break: break-word; padding: 18px; font-family: 'Open Sans',sans-serif;" align="left" valign="top">
+          
+    <table height="0px" align="center" border="0" cellpadding="0" cellspacing="0" width="84%" style="line-height: inherit; color: #000000; border-collapse: collapse; table-layout: fixed; border-spacing: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt; vertical-align: top; border-top: 1px solid #d8d0d0; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;" valign="top">
+      <tbody style="line-height: inherit;">
+        <tr style="line-height: inherit; border-collapse: collapse; vertical-align: top;" valign="top">
+          <td style="color: #000000; word-break: break-word; vertical-align: top; font-size: 0px; line-height: 0px; mso-line-height-rule: exactly; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; border-collapse: collapse;" valign="top">
+            <span style="line-height: inherit;">&#160;</span>
+          </td>
+        </tr>
+      </tbody>
     </table>
+  
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+    <!--[if (!mso)&(!IE)]><!--></div><!--<![endif]-->
+    </div>
   </div>
-  <div style="display: flex; justify-content: center; margin-top: 30px">
-    <table style="width: 100%; border-spacing: 8px 0">
-      <tr>
-        <th style="border-bottom: 2px solid black">Item Code</th>
-        <th style="border-bottom: 2px solid black">Item Description</th>
-        <th style="border-bottom: 2px solid black">Ordered</th>
-        <th style="border-bottom: 2px solid black">Prev Quality</th>
-        <th style="border-bottom: 2px solid black">Unit</th>
-        <th style="border-bottom: 2px solid black">Price (ln)</th>
-        <th style="border-bottom: 2px solid black">Disc %</th>
-        <th style="border-bottom: 2px solid black">Tax</th>
-        <th style="border-bottom: 2px solid black">Total</th>
+  <!--[if (mso)|(IE)]></td><![endif]-->
+        <!--[if (mso)|(IE)]></tr></table></td></tr></table><![endif]-->
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  <div class="u-row-container" style="line-height: inherit; padding: 0px; background-color: transparent;">
+    <div class="u-row" style="line-height: inherit; Margin: 0 auto; min-width: 320px; max-width: 600px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: #f9f9f9;">
+      <div style="line-height: inherit; border-collapse: collapse; display: table; width: 100%; background-color: transparent;">
+        <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr style="background-color: #f9f9f9;"><![endif]-->
+        
+  <!--[if (mso)|(IE)]><td align="center" width="600" style="width: 600px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;" valign="top"><![endif]-->
+  <div class="u-col u-col-100" style="line-height: inherit; max-width: 320px; min-width: 600px; display: table-cell; vertical-align: top;">
+    <div style="line-height: inherit; width: 100%;">
+    <!--[if (!mso)&(!IE)]><!--><div style="line-height: inherit; padding: 0px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-right: 0px solid transparent; border-bottom: 0px solid transparent;"><!--<![endif]-->
+    
+  <table style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; font-family: 'Open Sans',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0" valign="top">
+    <tbody style="line-height: inherit;">
+      <tr style="line-height: inherit; vertical-align: top; border-collapse: collapse;" valign="top">
+        <td style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; overflow-wrap: break-word; word-break: break-word; padding: 19px 33px 40px; font-family: 'Open Sans',sans-serif;" align="left" valign="top">
+          
+    <div style="color: #272362; line-height: 140%; text-align: center; word-wrap: break-word;">
+      <p style="margin: 0; font-size: 14px; line-height: 140%;"><span style="font-size: 24px; line-height: 33.6px;">Look forward to hearing from you </span><br style="line-height: inherit;"><span style="font-size: 24px; line-height: 33.6px;">in the near future.</span></p>
+    </div>
+  
+        </td>
       </tr>
-
-      ${payments.map((element, index) => {
-        return `
-      <tr>
-        <td style="text-align: left">${index + 1}</td>
-        <td style="text-align: left">${element[2]}</td>
-        <td style="text-align: left">P 0.00</td>
-        <td style="text-align: left">P 0.00</td>
-        <td style="text-align: left">1</td>
-        <td style="text-align: left">P ${element[4]}</td>
-        <td style="text-align: left"></td>
-        <td style="text-align: left"></td>
-        <td style="text-align: left">P ${element[4]}</td>
+    </tbody>
+  </table>
+  
+    <!--[if (!mso)&(!IE)]><!--></div><!--<![endif]-->
+    </div>
+  </div>
+  <!--[if (mso)|(IE)]></td><![endif]-->
+        <!--[if (mso)|(IE)]></tr></table></td></tr></table><![endif]-->
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  <div class="u-row-container" style="line-height: inherit; padding: 0px; background-color: transparent;">
+    <div class="u-row" style="line-height: inherit; Margin: 0 auto; min-width: 320px; max-width: 600px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: #272362;">
+      <div style="line-height: inherit; border-collapse: collapse; display: table; width: 100%; background-color: transparent;">
+        <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr style="background-color: #272362;"><![endif]-->
+        
+  <!--[if (mso)|(IE)]><td align="center" width="600" style="width: 600px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;" valign="top"><![endif]-->
+  <div class="u-col u-col-100" style="line-height: inherit; max-width: 320px; min-width: 600px; display: table-cell; vertical-align: top;">
+    <div style="line-height: inherit; width: 100%;">
+    <!--[if (!mso)&(!IE)]><!--><div style="line-height: inherit; padding: 0px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-right: 0px solid transparent; border-bottom: 0px solid transparent;"><!--<![endif]-->
+    
+  <table style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; font-family: 'Open Sans',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0" valign="top">
+    <tbody style="line-height: inherit;">
+      <tr style="line-height: inherit; vertical-align: top; border-collapse: collapse;" valign="top">
+        <td style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; overflow-wrap: break-word; word-break: break-word; padding: 23px 40px 10px; font-family: 'Open Sans',sans-serif;" align="left" valign="top">
+          
+    <div style="color: #b8b8b8; line-height: 140%; text-align: center; word-wrap: break-word;">
+      <p style="margin: 0; font-size: 14px; line-height: 140%;">Call us: 316 5265<br style="line-height: inherit;">EMAIL: property@sycamon.bw <br style="line-height: inherit;">&nbsp;Plot 5624, Real Estate Park, Lejara Road, Broadhurst Industrial.</p>
+    </div>
+  
+        </td>
       </tr>
-      `;
-      })} ;
+    </tbody>
+  </table>
+  
+  <table style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; font-family: 'Open Sans',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0" valign="top">
+    <tbody style="line-height: inherit;">
+      <tr style="line-height: inherit; vertical-align: top; border-collapse: collapse;" valign="top">
+        <td style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; overflow-wrap: break-word; word-break: break-word; padding: 19px 19px 0px; font-family: 'Open Sans',sans-serif;" align="left" valign="top">
+          
+    <table height="0px" align="center" border="0" cellpadding="0" cellspacing="0" width="91%" style="line-height: inherit; color: #000000; border-collapse: collapse; table-layout: fixed; border-spacing: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt; vertical-align: top; border-top: 1px solid #616888; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;" valign="top">
+      <tbody style="line-height: inherit;">
+        <tr style="line-height: inherit; border-collapse: collapse; vertical-align: top;" valign="top">
+          <td style="color: #000000; word-break: break-word; vertical-align: top; font-size: 0px; line-height: 0px; mso-line-height-rule: exactly; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; border-collapse: collapse;" valign="top">
+            <span style="line-height: inherit;">&#160;</span>
+          </td>
+        </tr>
+      </tbody>
     </table>
+  
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <table style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; font-family: 'Open Sans',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0" valign="top">
+    <tbody style="line-height: inherit;">
+      <tr style="line-height: inherit; vertical-align: top; border-collapse: collapse;" valign="top">
+        <td style="line-height: inherit; color: #000000; vertical-align: top; border-collapse: collapse; overflow-wrap: break-word; word-break: break-word; padding: 15px 40px; font-family: 'Open Sans',sans-serif;" align="left" valign="top">
+          
+    <div style="color: #bbbbbb; line-height: 140%; text-align: center; word-wrap: break-word;">
+      <p style="margin: 0; font-size: 14px; line-height: 140%;"><span style="font-size: 12px; line-height: 16.8px;">Sycamon &copy; 2022 |&nbsp; All Rights Reserved </span></p>
+    </div>
+  
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+    <!--[if (!mso)&(!IE)]><!--></div><!--<![endif]-->
+    </div>
   </div>
-
-  <div>
-    <ul style="list-style: none; float: right">
-      <li>Total (Excl) <span> P ${total}</span></li>
-      <li>Tax <span>P 0.00</span></li>
-      <li><span style="font-weight: bold">Total </span> P ${total}</li>
-      <li>Discount <span>P 0 .00</span></li>
-
-      <hr />
-      <li><span style="font-weight: bold">Total (Incl)</span> P ${total}</li>
-    </ul>
-
-    <ul style="list-style: none; float: left">
-      <li>Recieved By _________________</li>
-      <li>Date ________________________</li>
-      <li>Signed ______________________</li>
-    </ul>
+  <!--[if (mso)|(IE)]></td><![endif]-->
+        <!--[if (mso)|(IE)]></tr></table></td></tr></table><![endif]-->
+      </div>
+    </div>
   </div>
-</div>
-
-`;
+  
+  
+      <!--[if (mso)|(IE)]></td></tr></table><![endif]-->
+      </td>
+    </tr>
+    </tbody>
+    </table>
+    <!--[if mso]></div><![endif]-->
+    <!--[if IE]></div><![endif]-->
+  </div>
+  `;
+  }
 };
 
 async function print_invoice(
