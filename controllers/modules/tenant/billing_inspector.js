@@ -393,106 +393,108 @@ async function bill_tenant(tenant, billing_date) {
 
 //method for directly sending an invoice as part of an email in html format
 
-const createInvoice=(tenant, payments, total, billing_dates, invoice_id) => {
-
+const createInvoice = (tenant, payments, total, billing_dates, invoice_id) => {
   return new Promise((resolve, reject) => {
     const file_name = `invoice_${Date.now().toString()}.pdf`;
     const file_path = process.env.BASE_PATH + file_name;
     const invoice = new HummusRecipe("new", file_path);
 
     var left_center = { align: "left center", fontSize: 11, color: "#000000" };
-    var right_center = { align: "right center", fontSize: 11, color: "#000000" };
+    var right_center = {
+      align: "right center",
+      fontSize: 11,
+      color: "#000000",
+    };
     var center = { align: "center center", fontSize: 11, color: "#000000" };
 
+    const d = new Date();
+    const month = d.getMonth() + (2 % 12);
+    const year = d.getFullYear();
+    const billing_date = "01" + "/" + month + "/" + year;
 
-    const d  = new Date()
-    const month = d.getMonth()+2 % 12
-    const year  = d.getFullYear()
-    const billing_date = "01"+"/"+month+"/"+year
-    
+    console.log(tenant);
 
-    console.log(tenant)
+    var arrears = findArears(payments);
 
-
-    var arrears = findArears(payments)
-  
     invoice.createPage("a4");
-    invoice.image("./invoice_template/invoice2.pdf", 0, 0);
+    invoice.image("./invoice_template/invoice4.pdf", 0, 0);
 
-  
     invoice.text(
       tenant.first_name + " " + tenant.last_name,
       23.322,
-      129.478,
+      169.478,
       left_center
     );
 
     invoice.text(
       tenant.ID + tenant.first_name.substring(0, 3).toUpperCase(),
       79.484,
-      228.478,
+      268.478,
       center
     ); //Account
-    invoice.text(billing_date, 184.151, 228.479, center);  //DATE
-    invoice.text(tenant.rental_preset.purchase_order, 293.818, 228.479, center);  //Order No
-    invoice.text("INV" + invoice_id, 517.484, 228.479, center); //Our reference
+    invoice.text(billing_date, 184.151, 268.479, center); //DATE
+    invoice.text(tenant.rental_preset.purchase_order, 293.818, 268.479, center); //Order No
+    invoice.text("INV" + invoice_id, 517.484, 268.479, center); //Our reference
 
-    var y = 272.812;
+    var y = 322.812;
     for (var i = 0; i < payments.length; i++) {
-      if(payments[i][2]=='Arrears' ) continue
+      if (payments[i][2] == "Arrears") continue;
       invoice.text(i + 1, 22.322, y, left_center); //itemcode
       invoice.text(payments[i][2], 100.988, y, left_center); //desc
-      invoice.text("0.00", 227.988, y, left_center);
-      invoice.text("0.00", 279.988, y, left_center);
+      invoice.text("0", 227.988, y, left_center);
+      invoice.text("0,00", 279.988, y, left_center);
       invoice.text("1", 317.321, y, left_center);
-      invoice.text(" " + payments[i][4], 390.655, y, left_center); //price
-      invoice.text(" " + payments[i][4], 527.655, y, left_center); //line total
+      invoice.text(" " + payments[i][4] + ",00", 390.655, y, left_center); //price
+      invoice.text(" " + payments[i][4] + ",00", 527.655, y, left_center); //line total
       y = y + 13;
     }
 
-    var realTotal=total;
-  
-    if(arrears){
-      invoice.text(" " + arrears, 528.322, 455.978, right_center);
-      realTotal = (parseInt(arrears + total)).toString()
+    var realTotal = total;
+
+    if (arrears) {
+      invoice.text("" + total + ",00", 528.322, 555.978, left_center);
+    } else {
+      invoice.text("0,00", 528.322, 555.978, left_center);
     }
-    else{
-      invoice.text("0.00", 548.322, 455.978, right_center);
-    }
-    invoice.text("0.00", 548.322, 470.978, right_center);
-    invoice.text(" " + total, 548.322, 584.311, right_center);
-  
+    invoice.text(" 0,00", 528.322, 570.978, left_center);
+    invoice.text(" " + total + ",00", 528.322, 627.311, left_center);
+
     // invoice.text("P 0.00", 528.322, 497.645, left_center);
 
-    
-  
-    invoice.text(" " + realTotal, 548.322, 522.312, right_center);
-  
+    invoice.text(" " + total + ",00", 528.322, 595.312, left_center);
+
+    // if (arrears) {
+    //   invoice.text(" " + arrears, 528.322, 495.978, right_center);
+    //   realTotal = parseInt(arrears + total).toString();
+    // } else {
+    //   invoice.text("0.00", 548.322, 495.978, right_center);
+    // }
+    // invoice.text("0.00", 548.322, 510.978, right_center);
+    // invoice.text(" " + total, 548.322, 624.311, right_center);
+
+    // // invoice.text("P 0.00", 528.322, 497.645, left_center);
+
+    // invoice.text(" " + realTotal, 548.322, 562.312, right_center);
+
     invoice.endPage();
     invoice.endPDF();
-  
+
     console.log("===== After endPDF");
 
-    resolve({file_path , file_name})
+    resolve({ file_path, file_name });
+  });
+};
 
-  })
-}
-
- 
-function findArears(arr){
-
-  var arrears=null;
-  arr.forEach(item =>{
-    if (item[2] =='Arrears'){
-      arrears = item[4]
+function findArears(arr) {
+  var arrears = null;
+  arr.forEach((item) => {
+    if (item[2] == "Arrears") {
+      arrears = item[4];
     }
-  })
+  });
 
-  return arrears
-
+  return arrears;
 }
-
- 
 
 function uploadToCloudinary(file_path, file_name) {
   return new Promise((resolve, reject) => {
@@ -518,33 +520,34 @@ function uploadToCloudinary(file_path, file_name) {
 
 //EMAIL
 const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
-
   let file_path;
   let cloudpath;
- 
- createInvoice(tenant , payments , total ,billing_date , invoice_id)
- .then(res => {
-      file_path = res.file_path
 
-     return( uploadToCloudinary(res.file_path , res.file_name))
-     
-  })
- .then((result) => {
-      
-      return(  handle(messenger.mail({
+  createInvoice(tenant, payments, total, billing_date, invoice_id)
+    .then((res) => {
+      file_path = res.file_path;
+
+      return uploadToCloudinary(res.file_path, res.file_name);
+    })
+    .then((result) => {
+      return handle(
+        messenger.mail({
           from: "sycamon.bw@gmail.com",
           to: `${tenant.email_address}`,
           subject: "Sycamon [Accounts] ",
           html: html_invoice(result),
-          attachments: [{
-            filename: "sycamon_invoice.pdf",
-            path:result
-        }]  
-    })))
-     })
+          attachments: [
+            {
+              filename: "sycamon_invoice.pdf",
+              path: result,
+            },
+          ],
+        })
+      );
+    })
     .catch((err) => console.log("Error: " + err))
-    .then(() => fs.unlink(file_path, (err) => console.log("invoice deleted")))
- 
+    .then(() => fs.unlink(file_path, (err) => console.log("invoice deleted")));
+
   const html_invoice = (cloudpath) => {
     return `
   <div class="clean-body u_body" style="line-height: inherit; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; background-color: #ffffff; color: #000000;">
@@ -842,9 +845,10 @@ const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
     <!--[if IE]></div><![endif]-->
   </div>
   `;
-  }
+  };
 };
 
+//works perfectly-has aligned figures
 async function print_invoice(
   tenant,
   payments,
@@ -861,59 +865,57 @@ async function print_invoice(
     var left_center = { align: "left center", fontSize: 11, color: "#000000" };
     var center = { align: "center center", fontSize: 11, color: "#000000" };
 
-    const d  = new Date()
-    const month = d.getMonth()+2 % 12
-    const year  = d.getFullYear()
-    const billing_date = "01"+"/"+month+"/"+year
+    const d = new Date();
+    const month = d.getMonth() + (2 % 12);
+    const year = d.getFullYear();
+    const billing_date = "01" + "/" + month + "/" + year;
 
-    var arrears = findArears(payments)
-  
+    var arrears = findArears(payments);
+
     invoice.createPage("a4");
-    invoice.image("./invoice_template/invoice2.pdf", 0, 0);
+    invoice.image("./invoice_template/invoice4.pdf", 0, 0);
 
-  
     invoice.text(
       tenant.first_name + " " + tenant.last_name,
       23.322,
-      129.478,
+      169.478,
       left_center
     );
-  
+
     invoice.text(
       tenant.ID + tenant.first_name.substring(0, 3).toUpperCase(),
       79.484,
-      228.478,
+      268.478,
       center
     );
-    invoice.text(billing_date, 184.151, 228.479, center);
-    invoice.text("INV" + invoice_id, 517.484, 228.479, center);
-  
-    var y = 272.812;
+    invoice.text(billing_date, 184.151, 268.479, center);
+    invoice.text("INV" + invoice_id, 517.484, 268.479, center);
+
+    var y = 322.812;
     for (var i = 0; i < payments.length; i++) {
-      if(payments[i][2]=='Arrears' ) continue
+      if (payments[i][2] == "Arrears") continue;
       invoice.text(i + 1, 22.322, y, left_center); //itemcode
       invoice.text(payments[i][2], 100.988, y, left_center); //desc
-      invoice.text("P 0.00", 227.988, y, left_center);
-      invoice.text("P 0.00", 279.988, y, left_center);
+      invoice.text(" 0", 227.988, y, left_center);
+      invoice.text(" 0,00", 279.988, y, left_center);
       invoice.text("1", 317.321, y, left_center);
-      invoice.text("P " + payments[i][4], 390.655, y, left_center); //price
-      invoice.text("P " + payments[i][4], 527.655, y, left_center); //line total
+      invoice.text(" " + payments[i][4] + ",00", 390.655, y, left_center); //price
+      invoice.text(" " + payments[i][4] + ",00", 527.655, y, left_center); //line total
       y = y + 13;
     }
-  
-    if(arrears){
-      invoice.text("P " + total, 528.322, 455.978, left_center);
+
+    if (arrears) {
+      invoice.text(" " + total + ",00", 528.322, 555.978, left_center);
+    } else {
+      invoice.text("0,00", 528.322, 555.978, left_center);
     }
-    else{
-      invoice.text("P0.00", 528.322, 455.978, left_center);
-    }
-    invoice.text("P 0.00", 528.322, 470.978, left_center);
-    invoice.text("P " + total, 528.322, 484.311, left_center);
-  
+    invoice.text(" 0,00", 528.322, 570.978, left_center);
+    invoice.text(" " + total + ",00", 528.322, 627.311, left_center);
+
     // invoice.text("P 0.00", 528.322, 497.645, left_center);
-  
-    invoice.text("P " + total, 528.322, 522.312, left_center);
-  
+
+    invoice.text(" " + total + ",00", 528.322, 595.312, left_center);
+
     invoice.endPage();
     invoice.endPDF();
 
