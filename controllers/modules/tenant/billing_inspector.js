@@ -452,12 +452,12 @@ const createInvoice = (tenant, payments, total, billing_dates, invoice_id) => {
     var realTotal = total;
 
     if (arrears) {
-      invoice.text("" + total + ",00", 528.322, 555.978, left_center);
+      invoice.text("" + total + ",00", 528.322, 557.978, left_center);
     } else {
-      invoice.text("0,00", 528.322, 555.978, left_center);
+      invoice.text("0,00", 528.322, 557.978, left_center);
     }
-    invoice.text(" 0,00", 528.322, 570.978, left_center);
-    invoice.text(" " + total + ",00", 528.322, 627.311, left_center);
+    invoice.text(" 0,00", 528.322, 575.978, left_center);
+    invoice.text(" " + total + ",00", 528.322, 632.311, left_center);
 
     // invoice.text("P 0.00", 528.322, 497.645, left_center);
 
@@ -905,12 +905,12 @@ async function print_invoice(
     }
 
     if (arrears) {
-      invoice.text(" " + total + ",00", 528.322, 555.978, left_center);
+      invoice.text("" + total + ",00", 528.322, 557.978, left_center);
     } else {
-      invoice.text("0,00", 528.322, 555.978, left_center);
+      invoice.text("0,00", 528.322, 557.978, left_center);
     }
-    invoice.text(" 0,00", 528.322, 570.978, left_center);
-    invoice.text(" " + total + ",00", 528.322, 627.311, left_center);
+    invoice.text(" 0,00", 528.322, 575.978, left_center);
+    invoice.text(" " + total + ",00", 528.322, 632.311, left_center);
 
     // invoice.text("P 0.00", 528.322, 497.645, left_center);
 
