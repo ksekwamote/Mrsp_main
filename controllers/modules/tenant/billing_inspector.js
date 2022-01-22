@@ -441,27 +441,25 @@ const createInvoice = (tenant, payments, total, billing_dates, invoice_id) => {
       if (payments[i][2] == "Arrears") continue;
       invoice.text(i + 1, 22.322, y, left_center); //itemcode
       invoice.text(payments[i][2], 100.988, y, left_center); //desc
-      invoice.text("0", 227.988, y, left_center);
-      invoice.text("0,00", 279.988, y, left_center);
+      invoice.text(" 0", 227.988, y, left_center);
+      invoice.text(" 0.00", 279.988, y, left_center);
       invoice.text("1", 317.321, y, left_center);
-      invoice.text(" " + payments[i][4] + ",00", 390.655, y, left_center); //price
-      invoice.text(" " + payments[i][4] + ",00", 527.655, y, left_center); //line total
+      invoice.text(currency_format(payments[i][4]), 390.655, y, left_center); //price
+      invoice.text(currency_format(payments[i][4]), 527.655, y, left_center); //line total
       y = y + 13;
     }
 
-    var realTotal = total;
-
     if (arrears) {
-      invoice.text("" + total + ",00", 528.322, 557.978, left_center);
+      invoice.text(currency_format(total), 528.322, 557.978, left_center);
     } else {
-      invoice.text("0,00", 528.322, 557.978, left_center);
+      invoice.text("0.00", 528.322, 557.978, left_center);
     }
-    invoice.text(" 0,00", 528.322, 575.978, left_center);
-    invoice.text(" " + total + ",00", 528.322, 632.311, left_center);
+    invoice.text(" 0.00", 552.322, 575.978, left_center);
+    invoice.text(currency_format(total), 528.322, 632.311, left_center);
 
     // invoice.text("P 0.00", 528.322, 497.645, left_center);
 
-    invoice.text(" " + total + ",00", 528.322, 595.312, left_center);
+    invoice.text(currency_format(total), 528.322, 595.312, left_center);
 
     // if (arrears) {
     //   invoice.text(" " + arrears, 528.322, 495.978, right_center);
@@ -897,24 +895,24 @@ async function print_invoice(
       invoice.text(i + 1, 22.322, y, left_center); //itemcode
       invoice.text(payments[i][2], 100.988, y, left_center); //desc
       invoice.text(" 0", 227.988, y, left_center);
-      invoice.text(" 0,00", 279.988, y, left_center);
+      invoice.text(" 0.00", 279.988, y, left_center);
       invoice.text("1", 317.321, y, left_center);
-      invoice.text(" " + payments[i][4] + ",00", 390.655, y, left_center); //price
-      invoice.text(" " + payments[i][4] + ",00", 527.655, y, left_center); //line total
+      invoice.text(currency_format(payments[i][4]), 390.655, y, left_center); //price
+      invoice.text(currency_format(payments[i][4]), 527.655, y, left_center); //line total
       y = y + 13;
     }
 
     if (arrears) {
-      invoice.text("" + total + ",00", 528.322, 557.978, left_center);
+      invoice.text(currency_format(total), 528.322, 557.978, left_center);
     } else {
-      invoice.text("0,00", 528.322, 557.978, left_center);
+      invoice.text("0.00", 528.322, 557.978, left_center);
     }
-    invoice.text(" 0,00", 528.322, 575.978, left_center);
-    invoice.text(" " + total + ",00", 528.322, 632.311, left_center);
+    invoice.text(" 0.00", 552.322, 575.978, left_center);
+    invoice.text(currency_format(total), 528.322, 632.311, left_center);
 
     // invoice.text("P 0.00", 528.322, 497.645, left_center);
 
-    invoice.text(" " + total + ",00", 528.322, 595.312, left_center);
+    invoice.text(currency_format(total), 528.322, 595.312, left_center);
 
     invoice.endPage();
     invoice.endPDF();
@@ -1343,6 +1341,10 @@ function as_date(str) {
 
 function date_format(date) {
   return as_date(date).toDateString();
+}
+
+function currency_format(amount) {
+  return numeral(amount).format("P0,0.00");
 }
 
 function money_format(amount) {
