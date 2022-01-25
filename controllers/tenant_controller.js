@@ -18,10 +18,12 @@ const bulk_upload_tenants = require("./modules/tenant/bulk_upload");
 const XLSX = require("xlsx");
 const multer = require("multer");
 const changeInvoiceDate = require('./modules/tenant/changeInvoiceDate');
+const invoice_inspector = require("./modules/tenant/invoice_inspector");
 
 // const billing_inspector = require("./modules/tenant/billing_inspector");
 // const upload = multer({ dest: "uploads/" });
 const inspector = require("./modules/tenant/billing_inspector");
+
 
 module.exports.changeInvoiceDate = (req,res, next)=>{
   changeInvoiceDate(req.body).then(
@@ -29,7 +31,39 @@ module.exports.changeInvoiceDate = (req,res, next)=>{
   ).catch(error => res.status(200).send(error))
 }
 
+module.exports.invoice_inspector = (req,res ,next)=>{
+  
+  invoice_inspector({id: req.query.id})
+  .then(result => {
+    var invoice = result
+    var name = result.tenant.first_name + " " + result.tenant.last_name
+    var account = result.tenant.ID + result.tenant.first_name.substring(0, 3).toUpperCase()
+    const d  = new Date()
+    const month = d.getMonth()+2 % 12
+    const year  = d.getFullYear()
+    const billing_date = "01"+"/"+month+"/"+year
+    const invoice_id = "N/A"
 
+    invoice['name']= name
+    invoice['account']=account
+    invoice['billing_date']= billing_date
+    invoice['invoice_id'] = invoice_id
+
+    let arrears=0
+    invoice.payments.forEach(item => {
+        if (item[2]=="Arrears")arrears = item[4]
+    })
+
+    invoice['arrears'] = arrears
+
+     
+    res.render("invoice.ejs",{payload: invoice})  
+   
+  })
+  .catch(error =>res.render("404.ejs"))
+ //res.send("Hello World")
+
+}
 
 module.exports.bulk_upload = (req, res, next) => {
   const file = XLSX.readFile(req.file.path);

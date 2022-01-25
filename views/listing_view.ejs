@@ -344,6 +344,14 @@
                             </div>
                         </div>
 
+                        <?for(let i = 0; i < payload.active_tenants.length; i++){ ?>
+                            <div style="display: flex; justify-content: center; align-items: center; padding: 20px; background-color: pink;" >
+                                <h4><a href="/invoice?id=<?=payload.active_tenants[i].ID?>" target="_blank" >View Invoice</a></h4>
+                            </div>
+                            
+                            <?}?>
+                       
+
 
 
                     <div class="d-lg-flex d-md-flex justify-content-lg-center flex-wrap">

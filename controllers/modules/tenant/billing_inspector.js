@@ -449,9 +449,11 @@ const createInvoice = (tenant, payments, total, billing_dates, invoice_id) => {
       y = y + 13;
     }
 
+    
     if (arrears) {
-      invoice.text(currency_format(total), 528.322, 557.978, left_center);
+      invoice.text(currency_format(arrears), 528.322, 557.978, left_center);
     } else {
+      arrears=0
       invoice.text("0.00", 528.322, 557.978, left_center);
     }
     invoice.text(" 0.00", 552.322, 575.978, left_center);
@@ -459,7 +461,7 @@ const createInvoice = (tenant, payments, total, billing_dates, invoice_id) => {
 
     // invoice.text("P 0.00", 528.322, 497.645, left_center);
 
-    invoice.text(currency_format(total), 528.322, 595.312, left_center);
+    invoice.text(currency_format(total+arrears), 528.322, 595.312, left_center);
 
     // if (arrears) {
     //   invoice.text(" " + arrears, 528.322, 495.978, right_center);

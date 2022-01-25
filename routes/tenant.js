@@ -30,6 +30,8 @@ router.post(
   tenant_controller.bulk_upload
 );
 
+router.get('/invoice' ,tenant_controller.invoice_inspector)
+
 router.get("/view_tenant", tenant_controller.view_tenant);
 
 router.post("/post_notice", tenant_controller.post_notice);
