@@ -217,6 +217,7 @@ module.exports = async (params) => {
   );
 
   for (var i = 0; i < outgoing_mail.length; i++) {
+    console.log("Outgoing mAIL: "+outgoing_mail)
     await messenger.mail(outgoing_mail[i]);
   }
   console.log("\n\n******************mail sent********************\n\n");
@@ -526,7 +527,7 @@ const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
   createInvoice(tenant, payments, total, billing_date, invoice_id)
     .then((res) => {
       file_path = res.file_path;
-
+      console.log(`Tenant Email: ${tenant.email_address}`)
       return uploadToCloudinary(res.file_path, res.file_name);
     })
     .then((result) => {
@@ -545,8 +546,9 @@ const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
         })
       );
     })
+    .then(() => fs.unlink(file_path, (err) => console.log("invoice deleted")))
     .catch((err) => console.log("Error: " + err))
-    .then(() => fs.unlink(file_path, (err) => console.log("invoice deleted")));
+    
 
   const html_invoice = (cloudpath) => {
     return `

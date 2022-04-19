@@ -158,10 +158,10 @@ app.use(function (err, req, res, next) {
 //daily at 08:30 am
 var task = cron.schedule("30 8 * * *", () => {
   billing_inspector()
-    .then((result) => console.log(result))
-    .catch((error) => console.log(error));
+    .then((result) => console.log("Billing Inspector: "+result))
+    .catch((error) => console.log("Billing Inspector Error: "+error));
 });
 task.start();
 
-//app.listen(3012 , ()=> console.log(`Listening to 3012`))
-module.exports = app;
+app.listen(3012 , ()=> console.log(`Listening to 3012`))
+//module.exports = app;
