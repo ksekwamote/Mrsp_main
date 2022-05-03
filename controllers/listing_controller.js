@@ -16,10 +16,12 @@ const manage_expenses = require("./modules/listing/manage_expenses");
 const expenses = require("./modules/listing/expenses");
 const billing_inspector = require("./modules/tenant/billing_inspector");
 
+
 module.exports.load = (req, res, next) => {
   billing_inspector()
-    .then((result) => console.log("Billing Inspector Result: "+result))
-    .catch((error) => console.log("Billing Inspector Error: "+error));
+    .then((result) => console.log("Billing Inspector Result: " + result))
+    .catch((error) => console.log("Billing Inspector Error: " + error));
+
 
   get_listings({ landlord_id: req.session.passport.user })
     .then((result) => res.render("listings.ejs", { payload: result }))
@@ -132,7 +134,7 @@ module.exports.generate_upload_signature = (req, res, next) => {
 module.exports.view_listing = (req, res, next) => {
   get_listing({ listing_id: req.query.id })
     .then((result) => {
-      console.log(result)
+      console.log(result);
       res.render("listing_view.ejs", { payload: result });
     })
     .catch((error) => res.render("error", { message: error.message }));

@@ -6,6 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "@sendgrid/mail": "^7.6.2",
     "app-root-path": "^2.2.1",
     "body-parser": "^1.18.3",
     "browserify": "^16.2.3",

@@ -15,6 +15,8 @@ var outgoing_mail = [];
 var processing_window = 5;
 var invoiceFile;
 //var invoice = require("../../../invoice_1642065546436.pdf")
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 //configuaration details for cloud storage.
 
@@ -184,6 +186,18 @@ module.exports = async (params) => {
 
           console.log(invoice);
 
+          // queue_notif(
+          //   tenant.email_address,
+          //   "Your latest invoice has been prepared for you. Here is a secured link to your copy:\n" +
+          //     invoice
+          // );
+
+          // queue_notif(
+          //   tenant.email_address,
+          //   "Your latest invoice has been prepared for you. Here is a secured link to your copy:\n" +
+          //     invoice
+          // );
+
           //getting the publish date for the invoices that has been set
           // let [publishing_date, date_error] = await handle(
           //   promise_query("select publish_date from productkey")
@@ -217,7 +231,7 @@ module.exports = async (params) => {
   );
 
   for (var i = 0; i < outgoing_mail.length; i++) {
-    console.log("Outgoing mAIL: "+outgoing_mail)
+    console.log("Outgoing mAIL: " + outgoing_mail);
     await messenger.mail(outgoing_mail[i]);
   }
   console.log("\n\n******************mail sent********************\n\n");
@@ -230,6 +244,7 @@ module.exports = async (params) => {
 //function gets the date that the tenant has to be billed on.
 function get_billing_date(tenant) {
   console.log("-----> get billing date");
+  console.log("THIS IS THE TENANT WHO IS GETTING BILLED", tenant);
   var due = 34;
   var due_day = pad(tenant.rental_preset.due_day);
   var str = today_arr[0] + "-" + today_arr[1] + "-" + due_day;
@@ -450,11 +465,10 @@ const createInvoice = (tenant, payments, total, billing_dates, invoice_id) => {
       y = y + 13;
     }
 
-    
     if (arrears) {
       invoice.text(currency_format(arrears), 528.322, 557.978, left_center);
     } else {
-      arrears=0
+      arrears = 0;
       invoice.text("0.00", 528.322, 557.978, left_center);
     }
     invoice.text(" 0.00", 552.322, 575.978, left_center);
@@ -462,7 +476,12 @@ const createInvoice = (tenant, payments, total, billing_dates, invoice_id) => {
 
     // invoice.text("P 0.00", 528.322, 497.645, left_center);
 
-    invoice.text(currency_format(total+arrears), 528.322, 595.312, left_center);
+    invoice.text(
+      currency_format(total + arrears),
+      528.322,
+      595.312,
+      left_center
+    );
 
     // if (arrears) {
     //   invoice.text(" " + arrears, 528.322, 495.978, right_center);
@@ -524,31 +543,55 @@ const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
   let file_path;
   let cloudpath;
 
+  // const msg = {
+  //   to: `${tenant.email_address}`, // Change to your recipient
+  //   from: "sycamon.bw@gmail.com", // Change to your verified sender
+  //   subject: "Sycamon [Accounts] ",
+  //   text: "and easy to do anywhere, even with Node.js",
+  //   html: html_invoice(result),
+  // };
+
   createInvoice(tenant, payments, total, billing_date, invoice_id)
     .then((res) => {
       file_path = res.file_path;
-      console.log(`Tenant Email: ${tenant.email_address}`)
+      console.log(`Tenant Email: ${tenant.email_address}`);
       return uploadToCloudinary(res.file_path, res.file_name);
     })
     .then((result) => {
+      const bufferedPDF = Buffer.from(result);
+
       return handle(
-        messenger.mail({
-          from: "sycamon.bw@gmail.com",
-          to: `${tenant.email_address}`,
+        // messenger.mail({
+        //   from: "sycamon.bw@gmail.com",
+        //   to: `${tenant.email_address}`,
+        //   subject: "Sycamon [Accounts] ",
+        //   html: html_invoice(result),
+        //   attachments: [
+        //     {
+        //       filename: "sycamon_invoice.pdf",
+        //       path: result,
+        //     },
+        //   ],
+        // })
+
+        sgMail.send({
+          to: `${tenant.email_address}`, // Change to your recipient
+          from: "billing@sycamon.bw", // Change to your verified sender
           subject: "Sycamon [Accounts] ",
           html: html_invoice(result),
           attachments: [
             {
+              content: bufferedPDF.toString("base64"),
               filename: "sycamon_invoice.pdf",
-              path: result,
+              type: "application/pdf",
+              disposition: "attachment",
             },
           ],
         })
       );
     })
     .then(() => fs.unlink(file_path, (err) => console.log("invoice deleted")))
-    .catch((err) => console.log("Error: " + err))
-    
+    .catch((err) => console.log("Error: " + err));
 
   const html_invoice = (cloudpath) => {
     return `
