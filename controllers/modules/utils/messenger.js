@@ -6,48 +6,6 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const client = require("@sendgrid/client");
 client.setApiKey(process.env.SENDGRID_API_KEY);
 
-// const headers = {
-//   "on-behalf-of": "sycamon.bw",
-// };
-// const data = {
-//   domain: "mtnmail.mtn.co.bw",
-//   subdomain: "poso.mtn.co.bw",
-//   username: "billing@sycamon.bw",
-//   ips: ["196.61.210.161"],
-//   custom_spf: true,
-//   default: true,
-//   automatic_security: false,
-// };
-
-// const request = {
-//   url: `/v3/whitelabel/domains`,
-//   method: "POST",
-//   headers: headers,
-//   body: data,
-// };
-
-// client
-//   .request(request)
-//   .then(([response, body]) => {
-//     console.log(response.statusCode);
-//     console.log(response.body);
-//   })
-//   .catch((error) => {
-//     console.error(error);
-//   });
-
-// module.exports.authenticateMail = () => {
-//   client
-//     .request(request)
-//     .then(([response, body]) => {
-//       console.log("LOGGING THE RESPONSE CODE", response.statusCode);
-//       console.log(response.body);
-//     })
-//     .catch((error) => {
-//       console.error(error);
-//     });
-// };
-
 // module.exports.mail = (mail_options) => {
 //   return new Promise((resolve, reject) => {
 //     var transporter = nodemailer.createTransport({

@@ -15,13 +15,21 @@ const update_potential_credit_loss = require("./modules/listing/update_potential
 const manage_expenses = require("./modules/listing/manage_expenses");
 const expenses = require("./modules/listing/expenses");
 const billing_inspector = require("./modules/tenant/billing_inspector");
+const sgMail = require("@sendgrid/mail");
+// sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+// const msg = {
+//   to: "hope@thitoholdings.co.bw", // Change to your recipient
+//   from: "billing@sycamon.com", // Change to your verified sender
+//   subject: "Sending with SendGrid is Fun",
+//   text: "and easy to do anywhere, even with Node.js",
+//   html: "<strong>and easy to do anywhere, even with Node.js</strong>",
+// };
 
 module.exports.load = (req, res, next) => {
   billing_inspector()
     .then((result) => console.log("Billing Inspector Result: " + result))
     .catch((error) => console.log("Billing Inspector Error: " + error));
-
 
   get_listings({ landlord_id: req.session.passport.user })
     .then((result) => res.render("listings.ejs", { payload: result }))
