@@ -163,5 +163,5 @@ var task = cron.schedule("30 8 * * *", () => {
 });
 task.start();
 
-app.listen(3012, () => console.log(`Listening to 3012`));
-// module.exports = app;
+// app.listen(3012, () => console.log(`Listening to 3012`));
+module.exports = app;
