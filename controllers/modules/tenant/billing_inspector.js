@@ -541,8 +541,8 @@ function uploadToCloudinary(file_path, file_name) {
 //EMAIL
 const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
   let file_path;
-  let cloudpath;
-
+  let file_name;
+  let base64String;
   // const msg = {
   //   to: `${tenant.email_address}`, // Change to your recipient
   //   from: "sycamon.bw@gmail.com", // Change to your verified sender
@@ -553,13 +553,19 @@ const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
 
   createInvoice(tenant, payments, total, billing_date, invoice_id)
     .then((res) => {
-      file_path = res.file_path;
-      console.log(`Tenant Email: ${tenant.email_address}`);
+      file_path = `${res.file_path}`;
+      file_name = res.file_name;
+      base64String = fs.readFileSync(file_path).toString("base64");
+      console.log("THE FILE PATH OF THE INVOICE ", file_path);
+      //imageBinary, doc_name, type, username
+      const documentDetails = {
+        imageBinary: base64String,
+        doc_name: file_name,
+        type: "pdf",
+      };
       return uploadToCloudinary(res.file_path, res.file_name);
     })
     .then((result) => {
-      const bufferedPDF = Buffer.from(result);
-
       return handle(
         // messenger.mail({
         //   from: "sycamon.bw@gmail.com",
@@ -581,7 +587,7 @@ const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
           html: html_invoice(result),
           attachments: [
             {
-              content: bufferedPDF.toString("base64"),
+              content: base64String,
               filename: "sycamon_invoice.pdf",
               type: "application/pdf",
               disposition: "attachment",

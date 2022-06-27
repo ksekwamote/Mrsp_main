@@ -16,7 +16,7 @@ var session = require("express-session");
 var mysqlstore = require("express-mysql-session");
 var flash = require("connect-flash");
 var promise_query = require("./controllers/modules/utils/promise_connection");
-var billing_inspector = require("./controllers/modules/tenant/billing_inspector");
+var billing_inspector = require("./controllers/modules/billing_inspector");
 var cron = require("node-cron");
 require("dotenv").config({ path: require("app-root-path") + "/.env" });
 
