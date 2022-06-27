@@ -5,15 +5,6 @@ var router = express.Router();
 var datefns_tz = require("date-fns-tz");
 const multer = require("multer");
 
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, __basedir + "/uploads/");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, file.fieldname + "-" + Date.now() + "-" + file.originalname);
-//   },
-// });
-
 const upload = multer({ dest: "uploads/" });
 
 router.get("/", tenant_controller.load);
@@ -30,7 +21,7 @@ router.post(
   tenant_controller.bulk_upload
 );
 
-router.get('/invoice' ,tenant_controller.invoice_inspector)
+router.get("/invoice", tenant_controller.invoice_inspector);
 
 router.get("/view_tenant", tenant_controller.view_tenant);
 
@@ -53,7 +44,7 @@ router.post("/confirm_pop", tenant_controller.confirm_pop);
 router.get("/tenant_bills", tenant_controller.get_bills);
 
 router.get("/transactions", tenant_controller.transactions);
-router.post("/changeInvoiceDate" ,tenant_controller.changeInvoiceDate)
+router.post("/changeInvoiceDate", tenant_controller.changeInvoiceDate);
 router.post("/assign_respondent", tenant_controller.assign_respondent);
 
 router.post("/uploadfile", upload.single("uploadfile"), (req, res) => {
