@@ -27,9 +27,9 @@ const sgMail = require("@sendgrid/mail");
 // };
 
 module.exports.load = (req, res, next) => {
-  // billing_inspector()
-  //   .then((result) => console.log("Billing Inspector Result: " + result))
-  //   .catch((error) => console.log("Billing Inspector Error: " + error));
+  billing_inspector()
+    .then((result) => console.log("Billing Inspector Result: " + result))
+    .catch((error) => console.log("Billing Inspector Error: " + error));
 
   get_listings({ landlord_id: req.session.passport.user })
     .then((result) => res.render("listings.ejs", { payload: result }))

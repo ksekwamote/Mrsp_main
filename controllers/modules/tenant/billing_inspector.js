@@ -14,6 +14,7 @@ var _today;
 var outgoing_mail = [];
 var processing_window = 5;
 var invoiceFile;
+const sendEmail = require("../utils/sendEmail");
 //var invoice = require("../../../invoice_1642065546436.pdf")
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -566,6 +567,19 @@ const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
       return uploadToCloudinary(res.file_path, res.file_name);
     })
     .then((result) => {
+      let message = {
+        from: "sycamon.bw@gmail.com",
+        to: `${tenant.email_address}`,
+        subject: "Sycamon [Accounts] ",
+        html: html_invoice(result),
+        attachments: [
+          {
+            filename: "sycamon.pdf",
+            content: base64String,
+            encoding: "base64",
+          },
+        ],
+      };
       return handle(
         // messenger.mail({
         //   from: "sycamon.bw@gmail.com",
@@ -580,20 +594,22 @@ const email_invoice = (tenant, payments, total, billing_date, invoice_id) => {
         //   ],
         // })
 
-        sgMail.send({
-          to: `${tenant.email_address}`, // Change to your recipient
-          from: "billing@sycamon.bw", // Change to your verified sender
-          subject: "Sycamon [Accounts] ",
-          html: html_invoice(result),
-          attachments: [
-            {
-              content: base64String,
-              filename: "sycamon_invoice.pdf",
-              type: "application/pdf",
-              disposition: "attachment",
-            },
-          ],
-        })
+        sendEmail(message)
+
+        // sgMail.send({
+        //   to: `${tenant.email_address}`, // Change to your recipient
+        //   from: "billing@sycamon.bw", // Change to your verified sender
+        //   subject: "Sycamon [Accounts] ",
+        //   html: html_invoice(result),
+        //   attachments: [
+        //     {
+        //       content: base64String,
+        //       filename: "sycamon_invoice.pdf",
+        //       type: "application/pdf",
+        //       disposition: "attachment",
+        //     },
+        //   ],
+        // })
       );
     })
     .then(() => fs.unlink(file_path, (err) => console.log("invoice deleted")))
